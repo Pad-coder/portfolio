@@ -6,13 +6,13 @@ import image from "../assets/appImage.png";
 const Portfolio = () => {
   return (
     <>
-      <div className="h-screen p-10 ">
+      <div className="h-full p-10 ">
         <div className="container mx-auto relative top-10  ">
-          <div className="card lg:card-side bg-transparent flex shadow-xl hover:shadow-slate-800 duration-300  hover:scale-95 ">
+          <div className="card lg:card-side bg-transparent flex shadow-xl hover:shadow-lime-800 duration-300 ">
             <figure>
               <img src={image} alt="Album" />
             </figure>
-            <div className="card-body font-roboto font-thin text-slate-50">
+            <div className="card-body font-roboto font-thin text-lime-300">
               <h2 className="card-title">
                 Chatspace (Social Media Web Application)
               </h2>
@@ -25,19 +25,25 @@ const Portfolio = () => {
                 <b>Tech Stacks:React .js, Tailwind CSS, Node.js, Express, MongoDB, Mongoose</b>
               </p>
               <div className="card-actions justify-end">
-                <button className="btn btn-primary duration-300 transform hover:--translate-x-0 hover:-translate-y-1">
-                  See
-                </button>
+
+
+                <a href="https://chatspace-krbm.onrender.com/" target="_blank" rel="noopener noreferrer">
+                  <button className="btn btn-primary bg-lime-200 border-0 hover:bg-lime-300 duration-300 transform ">See</button>
+                </a>
+
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="absolute bottom-10 left-10">
-        <Link to="/">
-          <IoIosArrowBack className="relative hover:bg-slate-50 hover:text-blue-500 w-10 h-10 rounded-full" />
-          Back to Home
+
+      <div className=" justify-center flex flex-row ">
+
+        <Link to="/" className="bg-lime-300 py-5 px-10 my-10 rounded ">
+
+          <span className="text-sm text-neutral-900">Back to Home</span>
         </Link>
+
       </div>
     </>
   );

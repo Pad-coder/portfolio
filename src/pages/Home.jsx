@@ -1,18 +1,15 @@
 import React from "react";
-import Navbar from "../components/Navbar";
 import AboutMe from "../components/AboutMe";
+import Navbar from "../components/Navbar";
+
 const Home = () => {
   return <>
-    <div className="flex flex-col md:flex  md:items-end h-screen">
-      <div>
+    <div className=" flex flex-col h-screen">
+      <AboutMe />
+      <div className=" flex justify-center sm:justify-end  sm:shadow-xl ">
         <Navbar />
       </div>
-        
-        <div className="flex justify-center md:justify-end">
-       <AboutMe />
     </div>
-    </div>
-    
   </>
 };
 

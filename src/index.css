@@ -2,3 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+
+body {
+  background-color: #262626;
+}
+
+
+.text-xsm {
+  font-size: 0.750rem;
+  line-height: 1.25rem;
+}
