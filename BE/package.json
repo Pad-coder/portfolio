@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "server.js",
     "start": "server.js",
-    "build": "npm install"
+    
   },
   "type": "module",
   "author": "",
