@@ -28,7 +28,7 @@ const Portfolio = () => {
 
 
                 <a href="https://chatspace-krbm.onrender.com/" target="_blank" rel="noopener noreferrer">
-                  <button className="btn btn-primary bg-lime-200 border-0 hover:bg-lime-300 duration-300 transform ">See</button>
+                  <button className="btn btn-primary bg-lime-200 border-0 hover:bg-blue-300 duration-300 transform text-gray-700 ">See</button>
                 </a>
 
               </div>
