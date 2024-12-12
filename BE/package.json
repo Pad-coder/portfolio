@@ -1,10 +1,10 @@
 {
   "name": "portfolio",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "server.js",
-    "start": "server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
     
   },
   "type": "module",
