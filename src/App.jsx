@@ -6,7 +6,7 @@ import Portfolio from "./pages/Portfolio.jsx"
 import Contact from "./pages/Contact.jsx"
 import SocialMedia from "./pages/SocialMedia.jsx"
 import Footer from './components/Footer.jsx'
-
+import { Toaster } from "react-hot-toast"
 function App() {
   let data = true
 
@@ -20,8 +20,9 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/socialmedia" element={<SocialMedia />} />
       </Routes>
-
+      
       <Footer />
+      <Toaster />
     </>
   )
 }

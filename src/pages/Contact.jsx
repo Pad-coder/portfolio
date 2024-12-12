@@ -2,16 +2,41 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import { useState } from 'react'
-
-
+import axios from "axios";
+import toast from 'react-hot-toast'
 
 const Contact = () => {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
 
+  const sendMessage = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/api/sendMesssage/', { name, email, message })
+
+      await toast.success('Congratlation, I will reach you soon');
+
+      setTimeout(function () {
+        location.reload();
+      }, 2000);
+
+      return response.data;
+
+    } catch (error) {
+      if (error.response.data.message == "Invalid email address") {
+        console.error(error.response.data.message);
+        toast.error(error.response.data.message || 'Sorry, You entered wrong mail id.');
+      }
+      else {
+        console.error(error);
+        toast.error(error.message || 'Fill all the field.');
+      }
+    }
+  }
   return <>
 
-    <div className=" bg-neutral-900 px-6 py-24 sm:py-32 lg:px-8">
+    <div className="px-6 py-24 sm:py-32 lg:px-8">
       <div
-        aria-hidden="true"
         className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
       >
         <div
@@ -27,7 +52,11 @@ const Contact = () => {
         <h2 className="text-balance text-4xl font-semibold tracking-tight text-lime-300 sm:text-5xl">Contact Me</h2>
 
       </div>
-      <form action="#" method="POST" className="mx-auto mt-16 max-w-xl sm:mt-20">
+      <form className="mx-auto mt-16 max-w-xl sm:mt-20"
+        onSubmit={(e) => {
+          e.preventDefault()
+          sendMessage();
+        }}>
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           <div>
             <label htmlFor="name" className="block text-sm/6 font-semibold text-lime-300">
@@ -39,7 +68,8 @@ const Contact = () => {
                 name="name"
                 type="text"
                 autoComplete="given-name"
-                className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-900 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
           </div>
@@ -55,7 +85,8 @@ const Contact = () => {
                 name="email"
                 type="email"
                 autoComplete="email"
-                className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
           </div>
@@ -70,7 +101,8 @@ const Contact = () => {
                 id="message"
                 name="message"
                 rows={4}
-                className="block w-full rounded-md bg-white px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                onChange={(e) => setMessage(e.target.value)}
                 defaultValue={''}
               />
             </div>
@@ -78,25 +110,24 @@ const Contact = () => {
 
         </div>
         <div className="mt-10">
+
           <button
             type="submit"
-            className="block w-full rounded-md bg-lime-300 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-lime-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block w-full rounded-md bg-lime-300 px-3.5 py-2.5 text-center text-sm font-semibold text-neutral-900 shadow-sm hover:bg-lime-900 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Let's talk
+            Send message
           </button>
+          <span className="text-red-200 font-light text-xs">*If clicked the button, Please wait, It will take a few seconds for the message to go through.</span>
         </div>
       </form>
 
-      <div className=" justify-center flex flex-row ">
 
-        <Link to="/" className="bg-lime-300 py-5 px-10 my-10 rounded ">
-
-          <span className="text-sm text-neutral-900">Back to Home</span>
-        </Link>
-
-      </div>
     </div>
-
+    <div className="ml-5 mt-10 mb-5">
+      <Link to='/' className="flex items-center gap-2">
+        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
+      </Link>
+    </div>
 
   </>;
 };

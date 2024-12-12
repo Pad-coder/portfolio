@@ -3,6 +3,6 @@ import sendMesssage from "../controller/sendmessage.js";
 
 const Routes = Router()
 
-Routes.use('/sendMesssage',sendMesssage)
+Routes.post('/sendMesssage',sendMesssage)
 
 export default Routes

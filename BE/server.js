@@ -1,14 +1,16 @@
 import express from 'express'
 import 'dotenv/config.js'
+import cors from 'cors'
 import Routes from './src/routes/index.js'
 
-const PORT = 8000
+const PORT = process.env.PORT || 8000
 
 const app = express()
 
-app.use('/',(req,res)=>{
-    res.send('Hello World')
-})
+app.use(cors())
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api',Routes)
 

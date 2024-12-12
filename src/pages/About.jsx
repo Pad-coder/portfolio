@@ -2,7 +2,7 @@ import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 const About = () => {
-  return (
+  return <>
     <div className=" text-lime-300 pb-10 pl-10 hover:cursor-default">
       <div className=" flex flex-col gap-4 ml-5 mr-5 ">
         <div className="flex justify-start pt-10 ">
@@ -89,13 +89,14 @@ const About = () => {
           </ul>
         </div>
       </div>
-      <div className="ml-5 mt-10">
-        <Link to='/' >
-          <IoIosArrowBack className=" hover:bg-slate-100 hover:text-blue-500 rounded-full h-10 w-10" /><span>Back to Home</span>
+      
+    </div>
+    <div className="ml-5 mt-10 mb-5">
+        <Link to='/' className="flex items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
         </Link>
       </div>
-    </div>
-  );
+  </>
 };
 
 export default About;
