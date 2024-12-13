@@ -1,18 +1,26 @@
 import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
-const About = () => {
+const About = ({home,portfolio}) => {
+  
+  const scrollUp = (ref) => {
+    window.scrollTo({
+      top: ref.current.offsetTop,
+      behavior: 'smooth',
+    });
+  };
+
   return <>
     <div className=" text-lime-300 pb-10 pl-10 hover:cursor-default">
       <div className=" flex flex-col gap-4 ml-5 mr-5 ">
         <div className="flex justify-start pt-10 ">
           <h1 className="text-3xl  text-center font-roboto font-light  ">
-            About
+          Know About me!
           </h1>
         </div>
         <div className=" font-roboto font-thin ">
           <p>
-            Hello! I’m Padmanaban, a full-stack developer with a deep passion
+          Greetings! I’m Padmanaban, a full-stack developer with a deep passion
             for creating impactful digital solutions. From designing intuitive
             frontends to building powerful backends, I love diving into all
             aspects of development to bring ideas to life. My journey began with
@@ -75,11 +83,11 @@ const About = () => {
       
     </div>
     <div className="flex  justify-between mx-5 mt-10 mb-5">
-        <Link to='/' className="flex items-center gap-2">
+        <Link to='/' className="flex items-center gap-2" onClick={()=> scrollUp(home)}>
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
         </Link>
 
-        <Link to='/portfolio' className="flex flex-row-reverse items-center gap-2">
+        <Link to='/portfolio' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollUp(portfolio)}>
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Portfolio</span>
         </Link>
       </div>

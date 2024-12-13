@@ -7,18 +7,25 @@ import Contact from "./pages/Contact.jsx"
 import SocialMedia from "./pages/SocialMedia.jsx"
 import Footer from './components/Footer.jsx'
 import { Toaster } from "react-hot-toast"
+import {useRef} from 'react'
+
 function App() {
-  let data = true
+  const home = useRef(null);
+  const about = useRef(null);
+  const portfolio = useRef(null);
+  const contact = useRef(null);
+  const socialmedia = useRef(null);
+
 
   return (
     <>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/socialmedia" element={<SocialMedia />} />
+        <Route path="/" element={<Home ref={home} home={home} about={about} portfolio={portfolio} contact={contact} socialmedia={socialmedia} />} />
+        <Route path="/about" element={<About ref={about} home={home} portfolio={portfolio} />} />
+        <Route path="/portfolio" element={<Portfolio ref={portfolio} home={home} contact={contact} />} />
+        <Route path="/contact" element={<Contact ref={contact} home={home} socialmedia={socialmedia} />} />
+        <Route path="/socialmedia" element={<SocialMedia ref={socialmedia} home={home} />} />
       </Routes>
       
       <Footer />

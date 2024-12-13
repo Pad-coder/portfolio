@@ -5,7 +5,7 @@ import { useState } from 'react'
 import axios from "axios";
 import toast from 'react-hot-toast'
 
-const Contact = () => {
+const Contact = ({home,socialmedia}) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -33,6 +33,14 @@ const Contact = () => {
       }
     }
   }
+
+  const scrollUp = (ref) => {
+    window.scrollTo({
+      top: ref.current.offsetTop,
+      behavior: 'smooth',
+    });
+  };
+
   return <>
 
     <div className="px-6 py-24 sm:py-20 lg:px-8">
@@ -47,10 +55,10 @@ const Contact = () => {
           className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <div className="mx-auto max-w-2xl text-center">
+      <div className="mx-auto max-w-2xl text-center text-lime-300 ">
 
-        <h2 className="text-balance text-4xl font-semibold tracking-tight text-lime-300 sm:text-5xl">Contact Me</h2>
-
+        <h2 className="text-balance text-4xl font-semibold tracking-tight  sm:text-5xl">Contact Me</h2>
+        
       </div>
       <form className="mx-auto mt-16 max-w-xl sm:mt-20"
         onSubmit={(e) => {
@@ -67,8 +75,9 @@ const Contact = () => {
                 id="name"
                 name="name"
                 type="text"
+                placeholder="Enter Your Name"
                 autoComplete="given-name"
-                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-900 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-inherit focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
@@ -84,8 +93,9 @@ const Contact = () => {
                 id="email"
                 name="email"
                 type="email"
+                placeholder="Enter Your Email"
                 autoComplete="email"
-                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-inherit focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -100,8 +110,9 @@ const Contact = () => {
               <textarea
                 id="message"
                 name="message"
+                placeholder="Type Your Message"
                 rows={4}
-                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
+                className="block w-full rounded-md bg-lime-300 px-3.5 py-2 text-base text-neutral-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-inherit focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-neutral-900"
                 onChange={(e) => setMessage(e.target.value)}
                 defaultValue={''}
               />
@@ -124,14 +135,14 @@ const Contact = () => {
 
     </div>
     <div className="flex  justify-between mx-5 mt-10 mb-5">
-        <Link to='/' className="flex items-center gap-2">
-          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
-        </Link>
+      <Link to='/' className="flex items-center gap-2" onClick={()=> scrollUp(home)}>
+        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
+      </Link>
 
-        <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2">
-          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Connect with Social media</span>
-        </Link>
-      </div>
+      <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollUp(socialmedia)}>
+        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Connect with Social media</span>
+      </Link>
+    </div>
 
   </>;
 };

@@ -7,7 +7,13 @@ import { FaSquareXTwitter } from "react-icons/fa6";
 import { FaGithub } from "react-icons/fa";
 import wireframe from '../assets/wireframe.png'
 
-const SocialMedia = () => {
+const SocialMedia = ({home}) => {
+  const scrollUp = (ref) => {
+    window.scrollTo({
+      top: ref.current.offsetTop,
+      behavior: 'smooth',
+    });
+  };
   return <>
 
     <div className="h-lvh ">
@@ -52,7 +58,7 @@ const SocialMedia = () => {
 
     <div className=" justify-center flex flex-row  ">
 
-      <Link to="/" className="bg-lime-300 hover:bg-inherit text-neutral-900 hover:text-lime-300 py-3 px-5 mb-10 rounded ">
+      <Link to="/" className="bg-lime-300 hover:bg-inherit text-neutral-900 hover:text-lime-300 py-3 px-5 mb-10 rounded " onClick={()=>scrollUp(home)}>
 
         <span className="text-sm ">Back to Home</span>
       </Link>
