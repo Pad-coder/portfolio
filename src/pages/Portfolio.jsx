@@ -6,7 +6,7 @@ import image from "../assets/appImage.png";
 const Portfolio = () => {
   return (
     <>
-      <div className="h-full p-10 ">
+      <div className="h-lvh p-10 ">
         <div className="container mx-auto relative top-10  ">
           <div className="card lg:card-side bg-transparent flex shadow-xl hover:shadow-lime-800 duration-300 ">
             <figure>
