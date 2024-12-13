@@ -12,7 +12,7 @@ const Contact = () => {
 
   const sendMessage = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/sendMesssage/', { name, email, message })
+      const response = await axios.post('https://portfolio-be-99ru.onrender.com/api/sendMesssage/', { name, email, message })
 
       await toast.success('Congratlation, I will reach you soon');
 
@@ -123,11 +123,15 @@ const Contact = () => {
 
 
     </div>
-    <div className="ml-5 mt-10 mb-5">
-      <Link to='/' className="flex items-center gap-2">
-        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
-      </Link>
-    </div>
+    <div className="flex  justify-between mx-5 mt-10 mb-5">
+        <Link to='/' className="flex items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
+        </Link>
+
+        <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Connect with Social media</span>
+        </Link>
+      </div>
 
   </>;
 };

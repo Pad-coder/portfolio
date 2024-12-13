@@ -37,13 +37,14 @@ const Portfolio = () => {
         </div>
       </div>
 
-      <div className=" justify-center flex flex-row ">
-
-        <Link to="/" className="bg-lime-300 py-5 px-10 my-10 rounded ">
-
-          <span className="text-sm text-neutral-900">Back to Home</span>
+      <div className="flex  justify-between mx-5 mt-10 mb-5">
+        <Link to='/' className="flex items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
         </Link>
 
+        <Link to='/contact' className="flex flex-row-reverse items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Contact me</span>
+        </Link>
       </div>
     </>
   );

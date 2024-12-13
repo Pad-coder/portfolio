@@ -22,24 +22,7 @@ const About = () => {
         </div>
       </div>
 
-      <div className=" flex flex-col gap-4 ml-5 mr-5 ">
-        <div className="flex justify-start pt-10 ">
-          <h1 className="text-3xl text-center font-roboto font-light   ">
-            My Journey
-          </h1>
-        </div>
-
-        <div className=" font-roboto font-thin ">
-          <p>
-            Starting with the basics of HTML and CSS, I gradually expanded my
-            skill set to JavaScript, React, Node.js, and MongoDB. Over time,
-            I’ve tackled diverse projects, from building chat applications with
-            real-time messaging to creating robust e-commerce platforms. This
-            hands-on experience has helped me master the essential tools and
-            techniques that make a great developer.
-          </p>
-        </div>
-      </div>
+      
 
       <div className=" flex flex-col gap-4 ml-5 mr-5 ">
         <div className="flex justify-start pt-10 ">
@@ -91,9 +74,13 @@ const About = () => {
       </div>
       
     </div>
-    <div className="ml-5 mt-10 mb-5">
+    <div className="flex  justify-between mx-5 mt-10 mb-5">
         <Link to='/' className="flex items-center gap-2">
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
+        </Link>
+
+        <Link to='/portfolio' className="flex flex-row-reverse items-center gap-2">
+          <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Portfolio</span>
         </Link>
       </div>
   </>
