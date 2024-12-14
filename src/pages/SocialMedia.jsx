@@ -5,15 +5,13 @@ import { FaInstagram } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { FaGithub } from "react-icons/fa";
+import { scrollToUp } from "../utils/scrollUp";
 import wireframe from '../assets/wireframe.png'
 
 const SocialMedia = ({home}) => {
-  const scrollUp = (ref) => {
-    window.scrollTo({
-      top: ref.current.offsetTop,
-      behavior: 'smooth',
-    });
-  };
+
+  const scrollTo = scrollToUp()
+
   return <>
 
     <div className="h-lvh ">
@@ -58,7 +56,7 @@ const SocialMedia = ({home}) => {
 
     <div className=" justify-center flex flex-row  ">
 
-      <Link to="/" className="bg-lime-300 hover:bg-inherit text-neutral-900 hover:text-lime-300 py-3 px-5 mb-10 rounded " onClick={()=>scrollUp(home)}>
+      <Link to="/" className="bg-lime-300 hover:bg-inherit text-neutral-900 hover:text-lime-300 py-3 px-5 mb-10 rounded " onClick={()=>scrollTo(home)}>
 
         <span className="text-sm ">Back to Home</span>
       </Link>

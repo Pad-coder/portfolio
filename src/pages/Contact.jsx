@@ -4,11 +4,14 @@ import { IoIosArrowBack } from "react-icons/io";
 import { useState } from 'react'
 import axios from "axios";
 import toast from 'react-hot-toast'
+import { scrollToUp } from "../utils/scrollUp";
 
 const Contact = ({home,socialmedia}) => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+
+  const scrollTo = scrollToUp()
 
   const sendMessage = async () => {
     try {
@@ -34,12 +37,7 @@ const Contact = ({home,socialmedia}) => {
     }
   }
 
-  const scrollUp = (ref) => {
-    window.scrollTo({
-      top: ref.current.offsetTop,
-      behavior: 'smooth',
-    });
-  };
+  
 
   return <>
 
@@ -135,11 +133,11 @@ const Contact = ({home,socialmedia}) => {
 
     </div>
     <div className="flex  justify-between mx-5 mt-10 mb-5">
-      <Link to='/' className="flex items-center gap-2" onClick={()=> scrollUp(home)}>
+      <Link to='/' className="flex items-center gap-2" onClick={()=> scrollTo(home)}>
         <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
       </Link>
 
-      <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollUp(socialmedia)}>
+      <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollTo(socialmedia)}>
         <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Connect with Social media</span>
       </Link>
     </div>

@@ -1,16 +1,12 @@
 import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { scrollToUp } from "../utils/scrollUp";
 import image from "../assets/appImage.png";
 
 const Portfolio = ({home,contact}) => {
 
-  const scrollUp = (ref) => {
-    window.scrollTo({
-      top: ref.current.offsetTop,
-      behavior: 'smooth',
-    });
-  };
+  const scrollTo = scrollToUp()
 
   return (
     <>
@@ -46,11 +42,11 @@ const Portfolio = ({home,contact}) => {
       </div>
 
       <div className="flex  justify-between mx-5 mt-10 mb-5">
-        <Link to='/' className="flex items-center gap-2" onClick={()=> scrollUp(home)}>
+        <Link to='/' className="flex items-center gap-2" onClick={()=> scrollTo(home)}>
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
         </Link>
 
-        <Link to='/contact' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollUp(contact)}>
+        <Link to='/contact' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollTo(contact)}>
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Contact me</span>
         </Link>
       </div>
