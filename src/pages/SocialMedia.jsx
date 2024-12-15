@@ -14,7 +14,7 @@ const SocialMedia = ({home}) => {
 
   return <>
 
-    <div className="h-lvh ">
+    <div className="min-h-screen ">
       <div className="flex flex-col gap-5 mb-5 px-4 sm:px-20 py-4 sm:py-10 text-lime-300">
         <h1 className="text-xl  sm:text-2xl font-roboto font-light ">
           Follow My Journey

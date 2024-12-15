@@ -2,6 +2,7 @@ import React from "react";
 import { IoIosArrowBack } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { scrollToUp } from "../utils/scrollUp";
+import { motion } from "framer-motion";
 
 const About = ({home,portfolio}) => {
   
@@ -9,10 +10,14 @@ const About = ({home,portfolio}) => {
   
 
   return <>
-    <div className=" text-lime-300 pb-10 pl-10 hover:cursor-default">
-      <div className=" flex flex-col gap-4 ml-5 mr-5 ">
+    <motion.div className=" text-lime-300 pb-10 pl-10 hover:cursor-default select-none"
+    initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ duration: 3 }} 
+    >
+      <div className=" flex flex-col gap-4 ml-5 mr-5  ">
         <div className="flex justify-start pt-10 ">
-          <h1 className="text-3xl  text-center font-roboto font-light  ">
+          <h1 className="text-3xl  text-center font-roboto font-light ">
           Know About me!
           </h1>
         </div>
@@ -79,7 +84,7 @@ const About = ({home,portfolio}) => {
         </div>
       </div>
       
-    </div>
+    </motion.div>
     <div className="flex  justify-between mx-5 mt-10 mb-5">
         <Link to='/' className="flex items-center gap-2" onClick={()=> scrollTo(home)}>
           <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>

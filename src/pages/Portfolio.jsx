@@ -10,7 +10,7 @@ const Portfolio = ({home,contact}) => {
 
   return (
     <>
-      <div className="h-lvh p-10 ">
+      <div className="min-h-screen p-10 ">
         <div className="container mx-auto relative top-10  ">
           <div className="card lg:card-side bg-transparent flex shadow-xl hover:shadow-lime-800 duration-300 ">
             <figure>

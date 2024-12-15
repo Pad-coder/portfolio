@@ -137,8 +137,8 @@ const Contact = ({home,socialmedia}) => {
         <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full h-10 w-10" /><span className="text-lime-300">Back to Home</span>
       </Link>
 
-      <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2" onClick={()=> scrollTo(socialmedia)}>
-        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Connect with Social media</span>
+      <Link to='/socialmedia' className="flex flex-row-reverse items-center gap-2 " onClick={()=> scrollTo(socialmedia)}>
+        <IoIosArrowBack className=" hover:bg-inherit text-neutral-900 bg-lime-300 hover:text-lime-300 rounded-full rotate-180 h-10 w-10" /><span className="text-lime-300">Social media</span>
       </Link>
     </div>
 
