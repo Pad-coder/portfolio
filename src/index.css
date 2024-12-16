@@ -4,7 +4,7 @@
 
 
 body {
-  background-color: #262626;
+  background-color: rgb(23 23 23 / var(--tw-bg-opacity, 1))
 }
 
 

@@ -1,22 +1,24 @@
 import React from "react";
-import AboutMe from "../components/AboutMe";
-import Navbar from "../components/Navbar";
 
-const Home = ({about,portfolio,contact,socialmedia}) => {
-  return <>
-    <div className="grid grid-cols-1 min-h-screen">
-      <AboutMe />
-      
-        <Navbar about={about} portfolio={portfolio} contact={contact} socialmedia={socialmedia} />
-     
-      <div className=" flex flex-col flex-grow  text-neutral-900 bg-lime-300 px-5 py-5 my-24 sm:my-36 md:py-12 ">
-        <h3 className="text-md md:text-2xl font-roboto text-start mr-24">Turning my love for tech into dynamic web solutions</h3>
-        <h4 className="text-md md:text-2xl font-roboto text-end ml-24">I'm <marK className="bg-neutral-900 text-lime-300 p-1 rounded-sm">Padmanaban</marK> , your full-stack innovator with a spark for creativity</h4>
+const Home = () => {
+  return (
+    <>
+      <div className="md:mt-24  bg-lime-300">
+        <div className=" flex flex-col justify-evenly  items-center md:items-stretch mx-5 h-60 text-neutral-900 ">
+          <h3 className="text-md  md:text-2xl mr-20 font-roboto text-start ">
+            Turning my love for tech into dynamic web solutions
+          </h3>
+          <h4 className="text-md md:text-2xl ml-20  font-roboto text-end ">
+            I'm{" "}
+            <marK className="bg-neutral-900 text-lime-300 p-1 rounded-sm">
+              Padmanaban
+            </marK>{" "}
+            , your full-stack innovator with a spark for creativity
+          </h4>
+        </div>
       </div>
-      
-    </div>
-    
-  </>
+    </>
+  );
 };
 
 export default Home;
