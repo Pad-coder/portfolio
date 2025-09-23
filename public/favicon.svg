@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Lime green background -->
+  <rect width="32" height="32" fill="#D3F510"/>
+  
+  <!-- Circle around MP -->
+  <circle cx="16" cy="16" r="14" fill="none" stroke="#1F2D03" stroke-width="2"/>
+  
+  <!-- MP text -->
+  <text x="16" y="22" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#1F2D03">MP</text>
+</svg>
