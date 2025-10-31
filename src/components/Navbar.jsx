@@ -86,8 +86,7 @@ function Navbar() {
   return (
     <>
       {/* Custom Cursor for Navbar */}
-      <div
-        className={`fixed pointer-events-none z-50 transition-all duration-200 ease-out ${cursorVariant === 'hover'
+      <div className={`fixed pointer-events-none z-50 transition-all duration-200 ease-out  ${cursorVariant === 'hover'
             ? 'w-12 h-12 bg-neutral-900/20 border-2 border-neutral-900'
             : cursorVariant === 'logo'
               ? 'w-16 h-16 bg-lime-500/20 border-2 border-lime-600'
