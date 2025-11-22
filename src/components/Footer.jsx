@@ -5,7 +5,7 @@ function Footer() {
   const currentYear = new Date().getFullYear();
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = import.meta.env.VITE_phoneNumber; // Replace with your actual phone number
+    const phoneNumber = import.meta.env.VITE_phoneNumber; 
     const message = "Hello Padmanaban! I found your portfolio and would like to connect with you.";
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
