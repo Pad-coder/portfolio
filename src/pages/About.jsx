@@ -11,7 +11,7 @@ const About = () => {
     {
       title: "Frontend Architecture",
       description: "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
-      tools: ["React", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
+      tools: ["React.js", "Next.js", "Javascript", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
       icon: "</>"
     },
     {
@@ -23,7 +23,7 @@ const About = () => {
     {
       title: "Full-Stack Integration",
       description: "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
-      tools: ["React", "Javascript", "WordPress", "Figma", "Photoshop","Illustrator","Git & GitHub"],
+      tools: ["React.js", "Node.js", "Express.js", "MongoDB", "Figma", "Photoshop", "Illustrator", "Git", "GitHub"],
       icon: "[ ]"
     }
   ];
