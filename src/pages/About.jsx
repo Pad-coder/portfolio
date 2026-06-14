@@ -1,31 +1,90 @@
 import React, { useState, useEffect, useRef } from "react";
-import profile from '/profile.png'
+import profile from "/profile.png";
+
 const About = () => {
   const [isVisible, setIsVisible] = useState({});
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const aboutRef = useRef(null);
 
-
-
+  // Refined expertise content and logically grouped tools
   const expertise = [
     {
-      title: "Frontend Architecture",
-      description: "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
-      tools: ["React", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
-      icon: "</>"
+      title: "Frontend Engineering",
+      description:
+        "Crafting fluid, accessible, and highly interactive user interfaces. I focus on component-driven architecture and pixel-perfect implementation.",
+      categories: [
+        { name: "Core", tools: ["HTML5", "CSS3", "JavaScript"] },
+        { name: "Frameworks", tools: ["React", "Next.js"] },
+        {
+          name: "Styling & Motion",
+          tools: ["Tailwind CSS", "GSAP", "Bootstrap"],
+        },
+      ],
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+          />
+        </svg>
+      ),
     },
     {
-      title: "Backend Development",
-      description: "Designing scalable server-side applications with robust APIs, database optimization, and security best practices.",
-      tools: ["Node.js", "Express", "PHP", "MongoDB", "MySQL"],
-      icon: "{ }"
+      title: "Backend Architecture",
+      description:
+        "Designing secure, scalable server-side systems and RESTful APIs. Emphasizing database optimization and maintainable business logic.",
+      categories: [
+        { name: "Runtime", tools: ["Node.js", "PHP"] },
+        { name: "Frameworks", tools: ["Express"] },
+        { name: "Databases", tools: ["MongoDB", "MySQL"] },
+      ],
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+          />
+        </svg>
+      ),
     },
     {
-      title: "Full-Stack Integration",
-      description: "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
-      tools: ["React", "Javascript", "WordPress", "Figma", "Photoshop","Illustrator","Git & GitHub"],
-      icon: "[ ]"
-    }
+      title: "Product & Ecosystem",
+      description:
+        "Connecting the dots across the entire stack. Utilizing modern workflows, version control, and design tools to deliver polished products.",
+      categories: [
+        { name: "Design", tools: ["Figma", "Photoshop"] },
+        { name: "CMS", tools: ["WordPress"] },
+        { name: "Workflow", tools: ["Git", "GitHub"] },
+      ],
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          />
+        </svg>
+      ),
+    },
   ];
 
   useEffect(() => {
@@ -33,207 +92,208 @@ const About = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setIsVisible(prev => ({
-              ...prev,
-              [entry.target.id]: true
-            }));
+            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 },
     );
 
-    const elements = aboutRef.current?.querySelectorAll('[id]');
+    const elements = aboutRef.current?.querySelectorAll("[id]");
     elements?.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
 
-  const handleMouseMove = (e) => {
-    if (aboutRef.current) {
-      const rect = aboutRef.current.getBoundingClientRect();
-      setMousePosition({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
-    }
-  };
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
+
   return (
     <section
       ref={aboutRef}
-      className="relative bg-neutral-900 text-white overflow-hidden min-h-screen cursor-none"
-      onMouseMove={handleMouseMove}
+      className="relative text-white overflow-hidden min-h-screen pt-32 pb-24"
       id="about"
     >
-      {/* Custom Cursor */}
-      <div
-        className="fixed pointer-events-none z-50 w-4 h-4 bg-white/40 rounded-full mix-blend-difference transition-all duration-200"
-        style={{
-          left: mousePosition.x - 8,
-          top: mousePosition.y - 8,
-        }}
-      />
+      {/* Refined Minimal Ambient Lighting */}
+      <div className="absolute top-0 right-1/4 w-[800px] h-[600px] bg-lime-500/5 blur-[150px] rounded-full pointer-events-none -translate-y-1/3" />
 
-      {/* Decorative Tech Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 text-6xl text-white/5 animate-float">&lt;/&gt;</div>
-        <div className="absolute top-40 right-20 text-4xl text-white/5 animate-float" style={{ animationDelay: '1s' }}>{ }</div>
-        <div className="absolute bottom-40 left-20 text-5xl text-white/5 animate-float" style={{ animationDelay: '2s' }}>[ ]</div>
-        <div className="absolute bottom-20 right-10 text-3xl text-white/5 animate-float" style={{ animationDelay: '3s' }}>( )</div>
-        <div className="absolute top-1/2 left-1/4 w-px h-32 bg-gradient-to-b from-transparent via-white/10 to-transparent"></div>
-        <div className="absolute top-1/4 right-1/4 w-32 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-24 relative z-10">
-
-        {/* Header Section */}
-        <div
-          id="about-header"
-          className={`text-center mb-16 transform transition-all duration-1000 cursor-none ${isVisible['about-header'] ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-            }`}
-        >
-          <div className="inline-block relative mb-6">
-            <h1 className="text-xl md:text-6xl font-black tracking-tight">
-              ABOUT <span className="text-lime-400">•</span> ME
-            </h1>
-            <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-white via-lime-400 to-white rounded-full"></div>
-          </div>
-          <p className="text-md md:text-xl poppins-light text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Transforming complex problems into elegant digital solutions
-          </p>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-12 mb-16 ">
-
-          {/* Left Column - Image Placeholder & Intro */}
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 mb-24 items-start">
+          {/* Left Column - Profile Details */}
           <div
             id="about-intro"
-            className={` lg:col-span-1 transform transition-all duration-1000 delay-300 cursor-none ${isVisible['about-intro'] ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-              }`}
+            className={`lg:col-span-5 flex flex-col gap-8 transform transition-all duration-[800ms] ease-out delay-200 ${isVisible["about-intro"] ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}
           >
-            {/* Image Placeholder */}
-            <div className="relative mb-8 group cursor-none">
-              <div className=" md:w-full md:aspect-square bg-gradient-to-br from-gray-800/50 to-gray-700/30 rounded-2xl border-2 border-dashed border-gray-600/50 flex items-center justify-center hover:border-gray-500/70 transition-all duration-300">
-                <img src={profile} alt="Profile" />
+            {/* Elegant Image Container */}
+            <div className="relative group">
+              <div className="w-full aspect-[4/5] sm:aspect-square lg:aspect-[4/5] bg-neutral-900 rounded-[2rem] border border-white/5 flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:border-white/10 group-hover:shadow-[0_0_40px_rgba(255,255,255,0.02)]">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+                <img
+                  src={profile}
+                  alt="Padmanaban M"
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 scale-100 brightness-95 group-hover:brightness-105"
+                />
               </div>
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-lime-400 rounded-full animate-pulse"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 border-2 border-gray-600/50 rounded-full"></div>
             </div>
 
-            {/* Professional Intro */}
-            <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50 backdrop-blur-sm cursor-none">
-              <h2 className="text-lg md:text-2xl font-bold mb-4 text-white">PADMANABAN M</h2>
-              <p className="text-sm md:text-lg text-gray-300 leading-relaxed mb-4">
-                A passionate <strong className="text-lime-400">Full-Stack Developer</strong> and <strong className="text-lime-400">Tech Enthusiast</strong> with expertise in modern web technologies. I specialize in creating scalable, user-centric applications that solve real-world problems.
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-400 font-mono">
-                <span className="w-2 h-2 bg-lime-400 rounded-full animate-pulse"></span>
-                Available for exciting projects
+            {/* Premium Profile Card */}
+            <div className="bg-white/[0.02] rounded-[2rem] p-8 border border-white/5 backdrop-blur-xl">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-white tracking-tight">
+                    Padmanaban M
+                  </h2>
+                  <p className="text-neutral-400 text-sm mt-1">
+                    Full-Stack Engineer
+                  </p>
+                </div>
+                {/* Status Dot */}
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-lime-400/10 border border-lime-400/20">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
+                  </span>
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-lime-400">
+                    Available
+                  </span>
+                </div>
               </div>
+
+              <div className="w-full h-[1px] bg-white/5 mb-6"></div>
+
+              <p className="text-neutral-400 text-sm sm:text-base leading-relaxed font-light mb-6">
+                I started coding out of a desire to build things that matter.
+                Today, I focus on bridging the gap between elegant frontend
+                interfaces and robust backend architectures. I care deeply about
+                clean code, intuitive user experiences, and continuous learning.
+              </p>
+
+              <ul className="space-y-3 text-sm">
+
+                <li className="flex justify-between items-center">
+                  <span className="text-neutral-500">Focus</span>
+                  <span className="text-neutral-300 font-medium">
+                    Web Architecture
+                  </span>
+                </li>
+                <li className="flex justify-between items-center">
+                  <span className="text-neutral-500">Experience</span>
+                  <span className="text-neutral-300 font-medium">
+                    Junior / Mid-Level
+                  </span>
+                </li>
+              </ul>
             </div>
           </div>
 
           {/* Right Column - Expertise Cards */}
-          <div className="lg:col-span-2 ">
-            <div className="grid gap-6 ">
-              {expertise.map((item, index) => (
-                <div
-                  key={item.title}
-                  id={`expertise-${index}`}
-                  className={`bg-gray-800/50 rounded-2xl p-8 border border-gray-700/50 hover:border-gray-600/70 hover:bg-gray-800/70 transition-all duration-300 group  backdrop-blur-sm transform cursor-none  ${isVisible[`expertise-${index}`] ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-                    }`}
-                  style={{ transitionDelay: `${400 + index * 200}ms` }}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="text-xl md:text-3xl text-lime-400 font-mono group-hover:scale-110 transition-transform duration-300">
-                      {item.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg md:text-2xl font-bold mb-3 text-white group-hover:text-lime-400 transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className=" text-gray-300 leading-relaxed mb-4">
-                        {item.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {item.tools.map((tool) => (
-                          <span
-                            key={tool}
-                            className="px-3 py-1 text-xs font-mono bg-gray-700/50 text-gray-200 rounded-full hover:bg-lime-400 hover:text-gray-900 transition-colors duration-300 cursor-pointer border border-gray-600/30"
-                          >
-                            {tool}
+          <div className="lg:col-span-7 flex flex-col gap-6 pt-2 lg:pt-0">
+            {expertise.map((item, index) => (
+              <div
+                key={item.title}
+                id={`expertise-${index}`}
+                className={`group bg-white/[0.02] rounded-[2rem] p-8 sm:p-10 border border-white/5 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:bg-white/[0.03] hover:border-white/10 transform ${isVisible[`expertise-${index}`] ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}
+                style={{ transitionDelay: `${300 + index * 150}ms` }}
+              >
+                <div className="flex flex-col sm:flex-row items-start gap-6 sm:gap-8">
+                  {/* Premium Icon Container */}
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-neutral-400 group-hover:text-lime-400 group-hover:border-lime-400/20 group-hover:bg-lime-400/5 transition-all duration-300 shrink-0">
+                    {item.icon}
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-white tracking-tight mb-3 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-neutral-400 leading-relaxed font-light text-sm sm:text-base mb-8">
+                      {item.description}
+                    </p>
+
+                    {/* Organized Tech Badges */}
+                    <div className="flex flex-col gap-4">
+                      {item.categories.map((category) => (
+                        <div
+                          key={category.name}
+                          className="flex flex-wrap items-center gap-2"
+                        >
+                          <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold w-24 shrink-0">
+                            {category.name}
                           </span>
-                        ))}
-                      </div>
+                          <div className="flex flex-wrap gap-2">
+                            {category.tools.map((tool) => (
+                              <span
+                                key={tool}
+                                className="px-3 py-1 text-xs font-medium bg-black/40 text-neutral-300 rounded-lg border border-white/5 transition-colors duration-300 group-hover:border-white/10"
+                              >
+                                {tool}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
 
-
-
-        {/* Call to Action */}
+        {/* Premium CTA Section */}
         <div
           id="cta"
-          className={`text-center transform transition-all duration-1000 ${isVisible['cta'] ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
-            }`}
+          className={`mt-32 max-w-4xl mx-auto text-center transform transition-all duration-[1000ms] ease-out delay-500 ${isVisible["cta"] ? "translate-y-0 opacity-100" : "translate-y-12 opacity-0"}`}
         >
-          <div className="inline-block relative">
-            <h3 className="text-xl md:text-3xl font-bold mb-6 text-white">
-              Ready to <span className="text-lime-400">collaborate</span>?
+          <div className="bg-gradient-to-b from-white/[0.04] to-transparent border-t border-white/5 rounded-[3rem] p-12 sm:p-20 relative overflow-hidden">
+            <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
+              Let's Build Something <span className="text-lime-400">Great</span>
+              .
             </h3>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="group px-4 py-2 bg-lime-400 text-gray-900 rounded-2xl font-bold transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-lime-400/25 relative overflow-hidden"
-                onClick={() => scrollToSection('portfolio')}
+
+            <p className="text-neutral-400 text-base sm:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-10">
+              Whether you have a startup idea, need a technical partner, or want
+              to revamp an existing product, I'm ready to help turn your vision
+              into reality.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button
+                onClick={() => scrollToSection("contact")}
+                className="px-8 py-4 bg-white text-neutral-950 rounded-xl font-semibold transition-all duration-300 hover:bg-lime-400 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(163,230,53,0.2)] w-full sm:w-auto flex items-center justify-center gap-2"
               >
-                <span className="relative z-10">View My Work</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-lime-300 to-lime-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                <span className="absolute inset-0 flex items-center justify-center text-gray-900 font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                  View My Work
-                </span>
+                Get In Touch
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
               </button>
 
-              <button
-                className="px-4 py-2 border-2 border-gray-600 text-gray-300 rounded-2xl font-bold transition-all duration-300 hover:scale-105 hover:bg-lime-400 hover:text-gray-900 hover:border-lime-400"
-                onClick={() => {
-                  const link = document.createElement('a');
-                  link.href = '../../public/Padmanaban_CV.pdf'; // Put your resume in public folder
-                  link.download = 'Padmanaban_CV.pdf';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
+              <a
+                href="/Padmanaban_CV.pdf"
+                download
+                className="px-8 py-4 bg-transparent border border-white/10 text-white rounded-xl font-medium transition-all duration-300 hover:bg-white/5 hover:border-white/20 w-full sm:w-auto flex items-center justify-center gap-2"
               >
                 Download Resume
-              </button>
+              </a>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx="true">{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-          50% { transform: translateY(-20px) rotate(180deg); opacity: 0.1; }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 };
