@@ -174,29 +174,24 @@ const About = () => {
                       {item.description}
                     </p>
 
-                    {/* Organized Tech Badges */}
-                    <div className="flex flex-col gap-4">
-                      {item.categories.map((category) => (
-                        <div
-                          key={category.name}
-                          className="flex flex-wrap items-center gap-2"
-                        >
-                          <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold w-24 shrink-0">
-                            {category.name}
-                          </span>
-                          <div className="flex flex-wrap gap-2">
-                            {category.tools.map((tool) => (
-                              <span
-                                key={tool}
-                                className="px-3 py-1 text-xs font-medium bg-black/40 text-neutral-300 rounded-lg border border-white/5 transition-colors duration-300 group-hover:border-white/10"
-                              >
-                                {tool}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+
+{/* Organized Tech Badges */}
+<div className="flex flex-col gap-4">
+  {item.categories?.map((category) => ( // Added ?. here
+    <div key={category.name} className="flex flex-wrap items-center gap-2">
+      <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold w-24 shrink-0">
+        {category.name}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {category.tools?.map((tool) => ( // Added ?. here
+          <span key={tool} className="px-3 py-1 text-xs font-medium bg-black/40 text-neutral-300 rounded-lg border border-white/5 transition-colors duration-300 group-hover:border-white/10">
+            {tool}
+          </span>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
                   </div>
                 </div>
               </div>
