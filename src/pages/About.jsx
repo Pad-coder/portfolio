@@ -8,32 +8,10 @@ const About = () => {
   // Refined expertise content and logically grouped tools
   const expertise = [
     {
-      title: "Frontend Engineering",
-      description:
-        "Crafting fluid, accessible, and highly interactive user interfaces. I focus on component-driven architecture and pixel-perfect implementation.",
-      categories: [
-        { name: "Core", tools: ["HTML5", "CSS3", "JavaScript"] },
-        { name: "Frameworks", tools: ["React", "Next.js"] },
-        {
-          name: "Styling & Motion",
-          tools: ["Tailwind CSS", "GSAP", "Bootstrap"],
-        },
-      ],
-      icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-          />
-        </svg>
-      ),
+      title: "Frontend Architecture",
+      description: "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
+      tools: ["React", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
+      icon: "</>"
     },
     {
       title: "Backend Architecture",
@@ -61,30 +39,11 @@ const About = () => {
       ),
     },
     {
-      title: "Product & Ecosystem",
-      description:
-        "Connecting the dots across the entire stack. Utilizing modern workflows, version control, and design tools to deliver polished products.",
-      categories: [
-        { name: "Design", tools: ["Figma", "Photoshop"] },
-        { name: "CMS", tools: ["WordPress"] },
-        { name: "Workflow", tools: ["Git", "GitHub"] },
-      ],
-      icon: (
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-          />
-        </svg>
-      ),
-    },
+      title: "Full-Stack Integration",
+      description: "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
+      tools: ["React", "Javascript", "WordPress", "Figma", "Photoshop","Illustrator","Git & GitHub"],
+      icon: "[ ]"
+    }
   ];
 
   useEffect(() => {
