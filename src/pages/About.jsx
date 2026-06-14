@@ -109,7 +109,7 @@ const About = () => {
                     Padmanaban M
                   </h2>
                   <p className="text-neutral-400 text-sm mt-1">
-                    Full-Stack Engineer
+                    Full-Stack Developer | Tech Enthusiast
                   </p>
                 </div>
                 {/* Status Dot */}

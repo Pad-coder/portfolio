@@ -34,7 +34,7 @@ function Footer() {
           {/* Brand section */}
           <div className="lg:col-span-2 pr-4">
             <h3 className="text-xl font-bold text-white mb-2 tracking-tight">Padmanaban M.</h3>
-            <p className="text-neutral-500 text-sm tracking-widest font-semibold uppercase mb-6">Full-Stack Engineer</p>
+            <p className="text-neutral-500 text-sm tracking-widest font-semibold uppercase mb-6">Full-Stack Developer</p>
             <p className="text-neutral-400 font-light leading-relaxed max-w-sm mb-8">
               Crafting digital experiences with clean code, elegant design, and exceptional performance. Let's build the future together.
             </p>
