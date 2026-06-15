@@ -7,7 +7,7 @@ const Home = () => {
   const visualRef = useRef(null);
   const rafRef = useRef(null);
 
-  // --- ADVANCED ROBOT PHYSICS & ANIMATION REFS ---
+  // --- ADVANCED ROBOT & BUTTERFLY PHYSICS REFS ---
   const robotRef = useRef(null);
   const leftEyeRef = useRef(null);
   const rightEyeRef = useRef(null);
@@ -39,9 +39,12 @@ const Home = () => {
     cheekOp: 0, cheekY: 0, cheekVY: 0, targetCheekOp: 0, targetCheekY: 0,
     headTilt: 0, headTiltV: 0, targetHeadTilt: 0,
     
+    // Butterfly Intelligence
+    bugX: 0, bugY: 0, bugVX: 0, bugVY: 0, targetBugX: 0, targetBugY: 0, lastBugX: 0,
+    flutterSpeed: 0.8, flutterAmp: 50, targetFlutterSpeed: 0.8, targetFlutterAmp: 50,
+    
     idleFrames: 0,
     emotion: 'neutral',
-    bugX: 0, bugY: 0
   });
 
   // Mathematical Spring Formula for organic, rubbery movement
@@ -53,14 +56,12 @@ const Home = () => {
 
   // Unified Mouse & Touch Tracker
   const updateCursorPosition = useCallback((clientX, clientY) => {
-    // 1. 3D Tilt Background
     const x = (clientX - window.innerWidth / 2) * 0.02;
     const y = (clientY - window.innerHeight / 2) * 0.02;
     if (visualRef.current) {
       visualRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
     }
 
-    // 2. Robot Face Tracking
     if (robotRef.current) {
       const rect = robotRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
@@ -68,7 +69,7 @@ const Home = () => {
       
       physics.current.mouseX = clientX - centerX;
       physics.current.mouseY = clientY - centerY;
-      physics.current.idleFrames = 0; // Reset idle timer when interacting
+      physics.current.idleFrames = 0; // WAKE UP!
     }
   }, []);
 
@@ -93,36 +94,35 @@ const Home = () => {
 
     if (speed < 1) p.idleFrames++;
     
-    // --- ORGANIC BUTTERFLY PHYSICS ---
-    // Chaotic Lissajous curve for organic bug flight
-    p.bugX = Math.sin(p.time * 0.015) * 180 + Math.cos(p.time * 0.04) * 40; 
-    p.bugY = Math.cos(p.time * 0.012) * 120 - 50 + Math.sin(p.time * 0.07) * 30; 
-    
-    if (butterflyRef.current) {
-      // Rotation follows movement direction slightly
-      const bugRot = Math.sin(p.time * 0.03) * 15;
-      butterflyRef.current.style.transform = `translate3d(${p.bugX}px, ${p.bugY}px, 0) rotate(${bugRot}deg)`;
-    }
-
-    // Butterfly Wings Flutter Animation
-    if (leftWingRef.current && rightWingRef.current) {
-      const flutter = Math.sin(p.time * 0.8) * 50; // Fast wing flapping
-      leftWingRef.current.style.transform = `rotateY(${flutter}deg)`;
-      rightWingRef.current.style.transform = `rotateY(${-flutter}deg)`;
-    }
-
     let targetEyeX = p.mouseX;
     let targetEyeY = p.mouseY;
+    let isSleeping = false;
     
     // --- EMOTIONAL STATE MACHINE ---
-    if (p.idleFrames > 500) {
+    if (p.idleFrames > 480) {
       // SLEEPY (Idle > ~8 seconds)
+      isSleeping = true;
       p.emotion = 'sleepy';
-      p.targetMouthW = 15; p.targetMouthH = 0; // Flat tiny mouth
+      
+      // Robot Sleep Face
+      p.targetMouthW = 12; p.targetMouthH = 0; // Flat tiny mouth
       p.targetCheekOp = 0; p.targetCheekY = 0;
-      p.targetBlinkL = 0.2; p.targetBlinkR = 0.2; // Eyes half closed
-      p.targetHeadTilt = 10; // Head droops
-      targetEyeX = 0; targetEyeY = 30; 
+      p.targetBlinkL = 0.15; p.targetBlinkR = 0.15; // Eyes barely open
+      p.targetHeadTilt = 12; // Head droops to the right
+      targetEyeX = 0; targetEyeY = 25; // Looking down
+
+      // Funny Sleep Mechanics: Snoring Mouth & Ear Twitching
+      if (p.time % 180 < 60) {
+        p.targetMouthH = 15; // Inhale (Snore)
+        p.targetMouthW = 8;
+      }
+      if (p.time % 250 === 0) p.targetHeadTilt = 18; // Occasional sleep twitch
+      
+      // Butterfly Lands on Nose!
+      p.targetBugX = 0; 
+      p.targetBugY = 35; // Positioned right between the eyes
+      p.targetFlutterSpeed = 0.1; // Very slow, resting flutter
+      p.targetFlutterAmp = 15;
     } 
     else if (p.idleFrames > 120) {
       // CURIOUS (Idle > 2 seconds: Watches the glowing butterfly)
@@ -133,6 +133,11 @@ const Home = () => {
       p.targetCheekOp = 0.3; p.targetCheekY = -2;
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
       p.targetHeadTilt = (p.bugX / 120) * 15; // Tilts head following the butterfly
+      
+      // Butterfly flies normally
+      p.targetBugX = Math.sin(p.time * 0.015) * 200 + Math.cos(p.time * 0.04) * 50; 
+      p.targetBugY = Math.cos(p.time * 0.012) * 140 - 60 + Math.sin(p.time * 0.07) * 40; 
+      p.targetFlutterSpeed = 0.8; p.targetFlutterAmp = 55;
     } 
     else if (speed > 30) {
       // SURPRISED / DIZZY (Moving mouse very fast)
@@ -141,6 +146,11 @@ const Home = () => {
       p.targetCheekOp = 0.2; p.targetCheekY = 0;
       if (!p.isBlinking) { p.targetBlinkL = 1.3; p.targetBlinkR = 1.3; } // Wide eyes
       p.targetHeadTilt = (speedX / 50) * 20; 
+      
+      // Butterfly scatters erratically
+      p.targetBugX = Math.sin(p.time * 0.1) * 250; 
+      p.targetBugY = Math.cos(p.time * 0.08) * 200 - 100;
+      p.targetFlutterSpeed = 1.5; p.targetFlutterAmp = 70; // Panic flap
     } 
     else if (dist < 220) {
       // HAPPY / EXCITED (Hovering close to face)
@@ -149,6 +159,11 @@ const Home = () => {
       p.targetCheekOp = 0.9; p.targetCheekY = -15; // Glowing cheeks rise
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
       p.targetHeadTilt = Math.sin(p.time * 0.1) * 8; // Happy wiggle
+      
+      // Butterfly orbits happily close by
+      p.targetBugX = Math.sin(p.time * 0.03) * 160; 
+      p.targetBugY = Math.cos(p.time * 0.03) * 100 - 40;
+      p.targetFlutterSpeed = 0.9; p.targetFlutterAmp = 50;
     } 
     else {
       // NEUTRAL (Normal cursor tracking)
@@ -157,10 +172,15 @@ const Home = () => {
       p.targetCheekOp = 0.15; p.targetCheekY = 0;
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
       p.targetHeadTilt = (p.eyeX / 16) * 10; // Follows cursor with tilt
+      
+      // Butterfly standard flight
+      p.targetBugX = Math.sin(p.time * 0.015) * 220 + Math.cos(p.time * 0.04) * 60; 
+      p.targetBugY = Math.cos(p.time * 0.012) * 150 - 70; 
+      p.targetFlutterSpeed = 0.8; p.targetFlutterAmp = 55;
     }
 
     // --- RANDOM BLINKING & WINKING ---
-    if (!p.isBlinking && Math.random() < 0.008) {
+    if (!p.isBlinking && !isSleeping && Math.random() < 0.008) {
       p.isBlinking = true;
       if (Math.random() < 0.15 && p.emotion === 'happy') {
         p.targetBlinkL = 0.05; // Happy wink
@@ -172,32 +192,51 @@ const Home = () => {
     }
 
     // --- APPLY PHYSICS SPRINGS ---
-    // 1. Eye Position (Scaled up bounds for bigger face)
+    // 1. Butterfly Physics (Smooth chasing target)
+    [p.bugX, p.bugVX] = spring(p.bugX, p.targetBugX, p.bugVX, 0.04, 0.85);
+    [p.bugY, p.bugVY] = spring(p.bugY, p.targetBugY, p.bugVY, 0.04, 0.85);
+    p.flutterSpeed += (p.targetFlutterSpeed - p.flutterSpeed) * 0.1;
+    p.flutterAmp += (p.targetFlutterAmp - p.flutterAmp) * 0.1;
+
+    // 2. Eye Position (Scaled up bounds for bigger face)
     let destEyeX = Math.max(-18, Math.min(18, targetEyeX / 12));
     let destEyeY = Math.max(-16, Math.min(16, targetEyeY / 12));
-
     [p.eyeX, p.eyeVX] = spring(p.eyeX, destEyeX, p.eyeVX, 0.15, 0.7);
     [p.eyeY, p.eyeVY] = spring(p.eyeY, destEyeY, p.eyeVY, 0.15, 0.7);
 
-    // 2. Dynamic Mouth Morphing
+    // 3. Dynamic Mouth Morphing
     [p.mouthW, p.mouthWV] = spring(p.mouthW, p.targetMouthW, p.mouthWV, 0.12, 0.7);
     [p.mouthH, p.mouthHV] = spring(p.mouthH, p.targetMouthH, p.mouthHV, 0.12, 0.7);
 
-    // 3. Blinking
+    // 4. Blinking
     [p.blinkScaleL, p.blinkVL] = spring(p.blinkScaleL, p.targetBlinkL, p.blinkVL, 0.3, 0.5);
     [p.blinkScaleR, p.blinkVR] = spring(p.blinkScaleR, p.targetBlinkR, p.blinkVR, 0.3, 0.5);
 
-    // 4. Cheeks & Head Tilt
+    // 5. Cheeks & Head Tilt
     [p.cheekOp] = spring(p.cheekOp, p.targetCheekOp, 0, 0.05, 0.8);
     [p.cheekY, p.cheekVY] = spring(p.cheekY, p.targetCheekY, p.cheekVY, 0.1, 0.7);
     [p.headTilt, p.headTiltV] = spring(p.headTilt, p.targetHeadTilt, p.headTiltV, 0.08, 0.75);
 
     // --- APPLY DOM TRANSFORMS ---
+    // Update Butterfly DOM
+    if (butterflyRef.current) {
+      // Butterfly realistically tilts in the direction it is flying
+      const flightTilt = (p.bugX - p.lastBugX) * 2;
+      p.lastBugX = p.bugX;
+      butterflyRef.current.style.transform = `translate3d(${p.bugX}px, ${p.bugY}px, 0) rotate(${isSleeping ? 0 : flightTilt}deg)`;
+    }
+
+    if (leftWingRef.current && rightWingRef.current) {
+      const flutter = Math.sin(p.time * p.flutterSpeed) * p.flutterAmp;
+      leftWingRef.current.style.transform = `rotateY(${flutter}deg)`;
+      rightWingRef.current.style.transform = `rotateY(${-flutter}deg)`;
+    }
+
+    // Update Robot DOM
     if (leftEyeRef.current) leftEyeRef.current.style.transform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScaleL})`;
     if (rightEyeRef.current) rightEyeRef.current.style.transform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScaleR})`;
 
     if (mouthRef.current) {
-      // Procedural SVG Quadratic Bezier Curve for infinite mouth shapes (Scaled for larger face)
       mouthRef.current.setAttribute('d', `M ${60 - p.mouthW} 35 Q 60 ${35 + p.mouthH} ${60 + p.mouthW} 35`);
     }
 
@@ -208,25 +247,24 @@ const Home = () => {
       rightCheekRef.current.style.transform = `translateY(${p.cheekY}px)`;
     }
 
-    // Breathing Engine & Body Movement
     if (robotRef.current) {
-      const breathSpeed = p.emotion === 'sleepy' ? 0.02 : 0.06;
-      const breathDepth = p.emotion === 'sleepy' ? 8 : 4;
+      const breathSpeed = isSleeping ? 0.03 : 0.06;
+      const breathDepth = isSleeping ? 8 : 4;
       const breathY = Math.sin(p.time * breathSpeed) * breathDepth;
-      
       robotRef.current.style.transform = `translateY(${breathY}px) rotateZ(${p.headTilt}deg)`;
     }
 
-    // Ambient Glow reacts to happiness
     if (robotGlowRef.current) {
       const glowScale = 1 + (p.cheekOp * 0.4);
       robotGlowRef.current.style.transform = `scale(${glowScale})`;
       robotGlowRef.current.style.opacity = 0.15 + (p.cheekOp * 0.25);
     }
 
-    // Antennas react to mood
     if (leftEarRef.current && rightEarRef.current) {
-      const earRot = Math.sin(p.time * 0.1) * (p.emotion === 'happy' ? 18 : 3);
+      // Ears twitch wildly when moving fast, droop when asleep
+      let earRot = Math.sin(p.time * 0.1) * (p.emotion === 'happy' ? 18 : 3);
+      if (isSleeping && p.time % 120 < 10) earRot = 20; // Sleep twitch
+      if (isSleeping) earRot -= 15; // Droop down
       leftEarRef.current.style.transform = `rotate(${-earRot}deg)`;
       rightEarRef.current.style.transform = `rotate(${earRot}deg)`;
     }
@@ -271,15 +309,6 @@ const Home = () => {
         {/* LEFT CONTENT COLUMN */}
         {/* ========================================= */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left pt-10 lg:pt-0">
-          
-          {/* Mobile Notice (Visible only on small screens) */}
-          <div className={`lg:hidden flex items-center justify-center gap-2 mb-8 px-5 py-3 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-md transition-all duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
-             <span className="text-lime-400 text-lg">✨</span>
-             <span className="text-xs sm:text-sm text-neutral-400 font-light text-left leading-relaxed">
-               For the ultimate 60FPS physics experience, explore this site on a desktop!
-             </span>
-          </div>
-
           <div className={`transition-all duration-1000 ease-out ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
             <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md mb-8 hover:bg-white/[0.05] hover:border-white/20 transition-colors cursor-default">
               <span className="relative flex h-2 w-2">
@@ -349,7 +378,7 @@ const Home = () => {
         </div>
 
         {/* ========================================= */}
-        {/* RIGHT VISUAL CENTERPIECE - BIGGER ROBOT + BUTTERFLY */}
+        {/* RIGHT VISUAL CENTERPIECE - ROBOT + ADVANCED BUTTERFLY */}
         {/* ========================================= */}
         <div className={`flex relative h-full items-center justify-center transition-all duration-1000 ease-out delay-500 mt-16 lg:mt-0 scale-75 sm:scale-90 lg:scale-100 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
           
@@ -358,34 +387,46 @@ const Home = () => {
             {/* Dynamic Mood Glow */}
             <div ref={robotGlowRef} className="absolute inset-0 bg-lime-400 blur-[100px] rounded-full transition-opacity duration-300" style={{ opacity: 0.15 }} />
 
-            {/* THE CODE BUTTERFLY (Replaces Github Ball) */}
-            <div ref={butterflyRef} className="absolute z-30 flex items-center justify-center will-change-transform pointer-events-none">
-              {/* Custom SVG Butterfly representing </> and {} code symbols */}
-              <svg viewBox="0 0 24 24" className="w-12 h-12 text-lime-400 drop-shadow-[0_0_15px_rgba(163,230,53,0.9)] overflow-visible">
-                {/* Left Wing (Looks like < or { ) */}
-                <g ref={leftWingRef} style={{ transformOrigin: '12px 12px', willChange: 'transform' }}>
-                  <path d="M12,12 C6,2 0,6 4,18 C6,22 10,16 12,12 Z" fill="currentColor" opacity="0.8" />
-                  <path d="M12,12 C8,6 4,8 6,14 C7,16 9,14 12,12 Z" fill="#fff" opacity="0.6" />
+            {/* THE CODE BUTTERFLY (Upgraded to be Larger, Glowing, & Realistic) */}
+            <div ref={butterflyRef} className="absolute z-40 flex items-center justify-center will-change-transform pointer-events-none">
+              <svg viewBox="0 0 100 100" className="w-20 h-20 overflow-visible drop-shadow-[0_0_20px_rgba(163,230,53,0.8)]">
+                {/* Glowing Antennae */}
+                <path d="M 45 40 Q 35 20 25 15 M 55 40 Q 65 20 75 15" stroke="rgba(163,230,53,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                <circle cx="25" cy="15" r="2" fill="#fff" className="drop-shadow-[0_0_5px_#fff]" />
+                <circle cx="75" cy="15" r="2" fill="#fff" className="drop-shadow-[0_0_5px_#fff]" />
+
+                {/* Left Wings */}
+                <g ref={leftWingRef} style={{ transformOrigin: '50px 50px', willChange: 'transform' }}>
+                  {/* Top Wing */}
+                  <path d="M 48 45 C 20 10, -10 30, 5 60 C 15 80, 40 60, 48 55 Z" fill="rgba(163,230,53,0.3)" stroke="rgba(163,230,53,0.6)" strokeWidth="1" />
+                  <path d="M 45 48 C 25 25, 5 40, 15 55 Z" fill="rgba(255,255,255,0.4)" />
+                  {/* Bottom Wing */}
+                  <path d="M 48 55 C 30 70, 10 90, 20 95 C 35 100, 45 80, 48 65 Z" fill="rgba(163,230,53,0.2)" stroke="rgba(163,230,53,0.4)" strokeWidth="1" />
                 </g>
-                {/* Right Wing (Looks like > or } ) */}
-                <g ref={rightWingRef} style={{ transformOrigin: '12px 12px', willChange: 'transform' }}>
-                  <path d="M12,12 C18,2 24,6 20,18 C18,22 14,16 12,12 Z" fill="currentColor" opacity="0.8" />
-                  <path d="M12,12 C16,6 20,8 18,14 C17,16 15,14 12,12 Z" fill="#fff" opacity="0.6" />
+
+                {/* Right Wings */}
+                <g ref={rightWingRef} style={{ transformOrigin: '50px 50px', willChange: 'transform' }}>
+                  {/* Top Wing */}
+                  <path d="M 52 45 C 80 10, 110 30, 95 60 C 85 80, 60 60, 52 55 Z" fill="rgba(163,230,53,0.3)" stroke="rgba(163,230,53,0.6)" strokeWidth="1" />
+                  <path d="M 55 48 C 75 25, 95 40, 85 55 Z" fill="rgba(255,255,255,0.4)" />
+                  {/* Bottom Wing */}
+                  <path d="M 52 55 C 70 70, 90 90, 80 95 C 65 100, 55 80, 52 65 Z" fill="rgba(163,230,53,0.2)" stroke="rgba(163,230,53,0.4)" strokeWidth="1" />
                 </g>
+
                 {/* Glowing Core / Body */}
-                <rect x="11.2" y="8" width="1.6" height="8" rx="0.8" fill="#fff" className="drop-shadow-[0_0_5px_#fff]" />
+                <rect x="46" y="40" width="8" height="30" rx="4" fill="#fff" className="drop-shadow-[0_0_10px_#fff]" />
               </svg>
             </div>
 
-            {/* Static Code Tag Decorator (Moved slightly further out) */}
+            {/* Static Code Tag Decorator */}
             <div className="absolute -bottom-16 -left-12 w-24 h-24 bg-[#0d0d0d] border border-white/10 rounded-full flex items-center justify-center shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
               <span className="text-lime-400 font-bold font-mono text-2xl">{"</>"}</span>
             </div>
 
-            {/* === THE ROBOT CHARACTER (SCALED UP) === */}
+            {/* === THE ROBOT CHARACTER === */}
             <div ref={robotRef} className="relative z-10 will-change-transform">
               
-              {/* Ears / Antennas (Slightly larger) */}
+              {/* Ears / Antennas */}
               <div className="absolute top-1/2 -left-5 w-8 h-16 bg-white/5 border border-white/10 rounded-l-full backdrop-blur-md shadow-lg" ref={leftEarRef} style={{ transformOrigin: 'right center' }}>
                 <div className="absolute top-1/2 left-2.5 w-2 h-5 bg-lime-400/50 rounded-full -translate-y-1/2" />
               </div>
@@ -393,36 +434,34 @@ const Home = () => {
                  <div className="absolute top-1/2 right-2.5 w-2 h-5 bg-lime-400/50 rounded-full -translate-y-1/2" />
               </div>
 
-              {/* Main Glass Head (Increased width and height) */}
+              {/* Main Glass Head */}
               <div className="w-[360px] h-[310px] bg-gradient-to-b from-white/[0.08] to-transparent border border-white/10 backdrop-blur-2xl rounded-[4rem] shadow-[0_25px_60px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col items-center justify-center p-7">
                 
                 {/* Specular Highlight (Glass Reflection) */}
                 <div className="absolute top-2 left-8 right-8 h-8 bg-gradient-to-b from-white/[0.15] to-transparent rounded-full blur-[2px] pointer-events-none z-20" />
 
-                {/* Inner Screen (Face Area - Larger) */}
+                {/* Inner Screen (Face Area) */}
                 <div className="w-full h-full bg-[#030303] rounded-[3rem] border border-white/5 shadow-[inset_0_12px_40px_rgba(0,0,0,0.9)] relative flex flex-col items-center justify-center overflow-hidden">
                   
                   {/* Digital Screen Scanlines */}
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-                  {/* Emotion Cheeks (Adjusted for larger face) */}
+                  {/* Emotion Cheeks */}
                   <div ref={leftCheekRef} className="absolute top-32 left-10 w-16 h-10 bg-lime-400 blur-[18px] opacity-0 rounded-full will-change-transform" />
                   <div ref={rightCheekRef} className="absolute top-32 right-10 w-16 h-10 bg-lime-400 blur-[18px] opacity-0 rounded-full will-change-transform" />
 
-                  {/* Eyes Container (Wider gap) */}
+                  {/* Eyes Container */}
                   <div className="flex gap-14 z-10 relative mt-4">
                     
-                    {/* Left Eye Socket (Larger) */}
+                    {/* Left Eye Socket */}
                     <div className="w-16 h-20 bg-[#0a0a0a] rounded-full shadow-[inset_0_5px_15px_rgba(0,0,0,0.9)] border border-white/5 relative flex items-center justify-center overflow-hidden">
-                      {/* Pupil */}
                       <div ref={leftEyeRef} className="w-10 h-12 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.7)] will-change-transform relative">
                         <div className="absolute top-2 right-2 w-3 h-3 bg-white/80 rounded-full blur-[1px]" />
                       </div>
                     </div>
 
-                    {/* Right Eye Socket (Larger) */}
+                    {/* Right Eye Socket */}
                     <div className="w-16 h-20 bg-[#0a0a0a] rounded-full shadow-[inset_0_5px_15px_rgba(0,0,0,0.9)] border border-white/5 relative flex items-center justify-center overflow-hidden">
-                      {/* Pupil */}
                       <div ref={rightEyeRef} className="w-10 h-12 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.7)] will-change-transform relative">
                         <div className="absolute top-2 right-2 w-3 h-3 bg-white/80 rounded-full blur-[1px]" />
                       </div>
@@ -430,7 +469,7 @@ const Home = () => {
 
                   </div>
 
-                  {/* Dynamic SVG Mouth (Scaled Up) */}
+                  {/* Dynamic SVG Mouth */}
                   <div className="z-10 mt-8 relative">
                     <svg viewBox="0 0 120 60" className="w-24 h-12 overflow-visible">
                       <path 
