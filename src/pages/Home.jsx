@@ -7,7 +7,7 @@ const Home = () => {
   const visualRef = useRef(null);
   const rafRef = useRef(null);
 
-  // --- NEW: ADVANCED ROBOT PHYSICS & ANIMATION REFS ---
+  // --- ADVANCED ROBOT PHYSICS & ANIMATION REFS ---
   const robotRef = useRef(null);
   const leftEyeRef = useRef(null);
   const rightEyeRef = useRef(null);
@@ -19,23 +19,31 @@ const Home = () => {
   const githubBallRef = useRef(null);
   const robotGlowRef = useRef(null);
 
-  // State Machine & Physics Engine Engine (Kept in ref to avoid React re-renders, strictly 60fps)
+  // Physics Engine (Kept in ref to avoid React re-renders, strictly 60fps)
   const physics = useRef({
     time: 0,
     mouseX: 0, mouseY: 0,
     lastMouseX: 0, lastMouseY: 0,
     eyeX: 0, eyeY: 0, eyeVX: 0, eyeVY: 0,
-    smileOffset: 5, targetSmile: 5, smileV: 0,
-    blinkScale: 1, targetBlink: 1, blinkV: 0,
+    
+    // Mouth Spring
+    mouthW: 30, mouthH: 5, mouthWV: 0, mouthHV: 0, targetMouthW: 30, targetMouthH: 5,
+    
+    // Blinking & Winking
+    blinkScaleL: 1, blinkScaleR: 1, blinkVL: 0, blinkVR: 0, targetBlinkL: 1, targetBlinkR: 1,
     isBlinking: false,
-    cheekOp: 0, targetCheekOp: 0, cheekV: 0,
+    
+    // Cheeks & Head
+    cheekOp: 0, cheekY: 0, cheekVY: 0, targetCheekOp: 0, targetCheekY: 0,
+    headTilt: 0, headTiltV: 0, targetHeadTilt: 0,
+    
     idleFrames: 0,
     emotion: 'neutral',
     ballX: 0, ballY: 0
   });
 
-  // Spring Interpolation Helper
-  const spring = (val, target, vel, stiffness = 0.1, damping = 0.8) => {
+  // Mathematical Spring Formula for organic movement
+  const spring = (val, target, vel, stiffness = 0.1, damping = 0.75) => {
     const force = (target - val) * stiffness;
     vel = (vel + force) * damping;
     return [val + vel, vel];
@@ -76,116 +84,145 @@ const Home = () => {
     p.lastMouseX = p.mouseX;
     p.lastMouseY = p.mouseY;
 
-    // --- IDLE LOGIC & GITHUB BALL PHYSICS ---
     if (speed < 1) p.idleFrames++;
     
-    // Animate GitHub Ball
-    p.ballX = Math.sin(p.time * 0.02) * 80 + 100; // Orbit X
-    p.ballY = Math.cos(p.time * 0.015) * 60 - 50; // Orbit Y
+    // --- GITHUB BALL PHYSICS (Orbiting) ---
+    p.ballX = Math.sin(p.time * 0.02) * 140; // Wide Orbit X
+    p.ballY = Math.cos(p.time * 0.015) * 90 - 40 + Math.sin(p.time * 0.08) * 15; // Orbit Y + Bobbing
     
     if (githubBallRef.current) {
-      githubBallRef.current.style.transform = `translate3d(${p.ballX}px, ${p.ballY}px, 0) rotate(${p.time * 0.5}deg)`;
+      githubBallRef.current.style.transform = `translate3d(${p.ballX}px, ${p.ballY}px, 0) rotate(${p.time * 1.5}deg)`;
     }
 
-    // Determine target based on idle state (Watch cursor vs Watch ball)
-    let targetX = p.mouseX;
-    let targetY = p.mouseY;
+    let targetEyeX = p.mouseX;
+    let targetEyeY = p.mouseY;
+    let isWatchingBall = false;
     
-    // --- EMOTION STATE MACHINE ---
-    if (p.idleFrames > 120) {
-      // CURIOUS/IDLE: Watch the floating GitHub ball
+    // --- EMOTIONAL STATE MACHINE ---
+    if (p.idleFrames > 600) {
+      // SLEEPY (Idle > 10 seconds)
+      p.emotion = 'sleepy';
+      p.targetMouthW = 15; p.targetMouthH = 0; // Flat tiny mouth
+      p.targetCheekOp = 0; p.targetCheekY = 0;
+      p.targetBlinkL = 0.2; p.targetBlinkR = 0.2; // Eyes half closed
+      p.targetHeadTilt = 12; // Head droops to the side
+      targetEyeX = 0; targetEyeY = 20; // Looking down
+    } 
+    else if (p.idleFrames > 120) {
+      // CURIOUS (Idle > 2 seconds: Watching the floating GitHub ball)
       p.emotion = 'curious';
-      targetX = p.ballX; 
-      targetY = p.ballY;
-      p.targetSmile = 12; // Slight curious smile
-      p.targetCheekOp = 0.3;
-    } else if (dist > 500) {
-      // SAD: Cursor is too far away
+      isWatchingBall = true;
+      targetEyeX = p.ballX; 
+      targetEyeY = p.ballY;
+      p.targetMouthW = 12; p.targetMouthH = 12; // "Ooh" face
+      p.targetCheekOp = 0.4; p.targetCheekY = -2;
+      if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
+      p.targetHeadTilt = (p.ballX / 100) * 15; // Tilts head following the ball
+    } 
+    else if (speed > 30) {
+      // SURPRISED / DIZZY (Moving mouse very fast)
+      p.emotion = 'surprised';
+      p.targetMouthW = 10; p.targetMouthH = 20; // Tall narrow "O" mouth
+      p.targetCheekOp = 0.3; p.targetCheekY = 0;
+      if (!p.isBlinking) { p.targetBlinkL = 1.3; p.targetBlinkR = 1.3; } // Eyes wide open
+      p.targetHeadTilt = (speedX / 50) * 25; // Reactive tilt to momentum
+    } 
+    else if (dist < 180) {
+      // HAPPY / EXCITED (Hovering very close to robot)
+      p.emotion = 'happy';
+      p.targetMouthW = 35; p.targetMouthH = 25; // Big wide smile
+      p.targetCheekOp = 0.9; p.targetCheekY = -12; // Glowing cheeks rise up
+      if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
+      p.targetHeadTilt = Math.sin(p.time * 0.1) * 6; // Happy little wiggle
+    } 
+    else if (dist > 500) {
+      // SAD (Cursor abandoned it far away)
       p.emotion = 'sad';
-      p.targetSmile = -10; // Frown
-      p.targetCheekOp = 0;
-    } else if (speed > 15 || (dist < 150 && speed > 5)) {
-      // EXCITED: Moving fast or very close
-      p.emotion = 'excited';
-      p.targetSmile = 25; // Big smile
-      p.targetCheekOp = 0.9; // Glowing cheeks
-    } else {
-      // NEUTRAL: Normal tracking
+      p.targetMouthW = 25; p.targetMouthH = -10; // Frown
+      p.targetCheekOp = 0; p.targetCheekY = 0;
+      if (!p.isBlinking) { p.targetBlinkL = 0.8; p.targetBlinkR = 0.8; }
+      p.targetHeadTilt = -4; // Slight depressed tilt
+    } 
+    else {
+      // NEUTRAL (Normal tracking)
       p.emotion = 'neutral';
-      p.targetSmile = 5; // Pleasant default
-      p.targetCheekOp = 0;
+      p.targetMouthW = 30; p.targetMouthH = 6; // Pleasant curve
+      p.targetCheekOp = 0.2; p.targetCheekY = 0;
+      if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
+      p.targetHeadTilt = (p.eyeX / 14) * 8; // Slight tilt depending on where it looks
     }
 
-    // --- RANDOM NATURAL BLINKING ---
-    if (!p.isBlinking && Math.random() < 0.006) {
+    // --- RANDOM BLINKING & WINKING ---
+    if (!p.isBlinking && Math.random() < 0.008) {
       p.isBlinking = true;
-      p.targetBlink = 0.05; // Squint/Blink
-      setTimeout(() => { p.targetBlink = 1; p.isBlinking = false; }, 150);
       
-      // Double blink chance
-      if (Math.random() < 0.3) {
-        setTimeout(() => {
-          p.targetBlink = 0.05;
-          setTimeout(() => { p.targetBlink = 1; }, 100);
-        }, 250);
+      // 15% chance to wink if happy or neutral
+      if (Math.random() < 0.15 && (p.emotion === 'happy' || p.emotion === 'neutral')) {
+        p.targetBlinkL = 0.05; // Wink left eye
+        setTimeout(() => { p.targetBlinkL = 1; p.isBlinking = false; }, 200);
+      } else {
+        // Normal Blink
+        p.targetBlinkL = 0.05; p.targetBlinkR = 0.05; 
+        setTimeout(() => { p.targetBlinkL = 1; p.targetBlinkR = 1; p.isBlinking = false; }, 150);
       }
     }
 
     // --- APPLY PHYSICS SPRINGS ---
-    // 1. Eye Position (Smooth lag)
-    const maxEyeX = 14; 
-    const maxEyeY = 12;
-    let destEyeX = (targetX / 300) * maxEyeX;
-    let destEyeY = (targetY / 300) * maxEyeY;
-    destEyeX = Math.max(-maxEyeX, Math.min(maxEyeX, destEyeX));
-    destEyeY = Math.max(-maxEyeY, Math.min(maxEyeY, destEyeY));
+    // 1. Eye Position Constraint
+    let destEyeX = Math.max(-14, Math.min(14, targetEyeX / 15));
+    let destEyeY = Math.max(-12, Math.min(12, targetEyeY / 15));
 
     [p.eyeX, p.eyeVX] = spring(p.eyeX, destEyeX, p.eyeVX, 0.15, 0.7);
     [p.eyeY, p.eyeVY] = spring(p.eyeY, destEyeY, p.eyeVY, 0.15, 0.7);
 
-    // 2. Mouth Morphing
-    [p.smileOffset, p.smileV] = spring(p.smileOffset, p.targetSmile, p.smileV, 0.1, 0.75);
+    // 2. Dynamic Mouth Morphing
+    [p.mouthW, p.mouthWV] = spring(p.mouthW, p.targetMouthW, p.mouthWV, 0.12, 0.7);
+    [p.mouthH, p.mouthHV] = spring(p.mouthH, p.targetMouthH, p.mouthHV, 0.12, 0.7);
 
-    // 3. Blinking
-    [p.blinkScale, p.blinkV] = spring(p.blinkScale, p.targetBlink, p.blinkV, 0.4, 0.5);
+    // 3. Blinking / Winking
+    [p.blinkScaleL, p.blinkVL] = spring(p.blinkScaleL, p.targetBlinkL, p.blinkVL, 0.3, 0.5);
+    [p.blinkScaleR, p.blinkVR] = spring(p.blinkScaleR, p.targetBlinkR, p.blinkVR, 0.3, 0.5);
 
-    // 4. Cheeks
-    [p.cheekOp, p.cheekV] = spring(p.cheekOp, p.targetCheekOp, p.cheekV, 0.05, 0.8);
+    // 4. Cheeks & Head Tilt
+    [p.cheekOp] = spring(p.cheekOp, p.targetCheekOp, 0, 0.05, 0.8); // Direct lerp for opacity
+    [p.cheekY, p.cheekVY] = spring(p.cheekY, p.targetCheekY, p.cheekVY, 0.1, 0.7);
+    [p.headTilt, p.headTiltV] = spring(p.headTilt, p.targetHeadTilt, p.headTiltV, 0.08, 0.75);
 
-    // --- APPLY TRANSFORMS TO DOM ---
-    if (leftEyeRef.current && rightEyeRef.current) {
-      const eyeTransform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScale})`;
-      leftEyeRef.current.style.transform = eyeTransform;
-      rightEyeRef.current.style.transform = eyeTransform;
-    }
+    // --- APPLY DOM TRANSFORMS ---
+    if (leftEyeRef.current) leftEyeRef.current.style.transform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScaleL})`;
+    if (rightEyeRef.current) rightEyeRef.current.style.transform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScaleR})`;
 
     if (mouthRef.current) {
-      // Dynamic SVG quadratic bezier curve for the mouth
-      mouthRef.current.setAttribute('d', `M 15 25 Q 50 ${25 + p.smileOffset} 85 25`);
+      // Procedural SVG Quadratic Bezier Curve for infinite mouth shapes
+      mouthRef.current.setAttribute('d', `M ${50 - p.mouthW} 25 Q 50 ${25 + p.mouthH} ${50 + p.mouthW} 25`);
     }
 
     if (leftCheekRef.current && rightCheekRef.current) {
       leftCheekRef.current.style.opacity = p.cheekOp;
       rightCheekRef.current.style.opacity = p.cheekOp;
+      leftCheekRef.current.style.transform = `translateY(${p.cheekY}px)`;
+      rightCheekRef.current.style.transform = `translateY(${p.cheekY}px)`;
     }
 
-    // Micro-movements (Breathing & Head Tilt)
+    // Breathing Engine & Body Movement
     if (robotRef.current) {
-      const breathY = Math.sin(p.time * 0.05) * 4;
-      const lookTilt = p.eyeX * 0.5; // Tilt head slightly in look direction
-      robotRef.current.style.transform = `translateY(${breathY}px) rotateZ(${lookTilt}deg)`;
+      const breathSpeed = p.emotion === 'sleepy' ? 0.02 : 0.06;
+      const breathDepth = p.emotion === 'sleepy' ? 6 : 3;
+      const breathY = Math.sin(p.time * breathSpeed) * breathDepth;
+      
+      robotRef.current.style.transform = `translateY(${breathY}px) rotateZ(${p.headTilt}deg)`;
     }
 
-    // Ambient Glow Intensity
+    // Ambient Glow reacts to happiness
     if (robotGlowRef.current) {
-      const glowScale = 1 + (p.cheekOp * 0.2);
+      const glowScale = 1 + (p.cheekOp * 0.3);
       robotGlowRef.current.style.transform = `scale(${glowScale})`;
-      robotGlowRef.current.style.opacity = 0.2 + (p.cheekOp * 0.15);
+      robotGlowRef.current.style.opacity = 0.15 + (p.cheekOp * 0.2);
     }
 
-    // Ear wiggles
+    // Antennas react to mood
     if (leftEarRef.current && rightEarRef.current) {
-      const earRot = Math.sin(p.time * 0.1) * (p.emotion === 'excited' ? 15 : 2);
+      const earRot = Math.sin(p.time * 0.1) * (p.emotion === 'happy' ? 15 : 2);
       leftEarRef.current.style.transform = `rotate(${-earRot}deg)`;
       rightEarRef.current.style.transform = `rotate(${earRot}deg)`;
     }
@@ -302,17 +339,17 @@ const Home = () => {
           <div ref={visualRef} className="relative w-full max-w-lg flex items-center justify-center" style={{ perspective: "1000px" }}>
             
             {/* Dynamic Mood Glow */}
-            <div ref={robotGlowRef} className="absolute inset-0 bg-lime-400 blur-[90px] rounded-full transition-opacity duration-300" style={{ opacity: 0.2 }} />
+            <div ref={robotGlowRef} className="absolute inset-0 bg-lime-400 blur-[90px] rounded-full transition-opacity duration-300" style={{ opacity: 0.15 }} />
 
-            {/* Floating GitHub Physics Ball (Robot plays with this when idle) */}
-            <div ref={githubBallRef} className="absolute z-20 w-16 h-16 bg-white/[0.05] border border-white/20 rounded-2xl backdrop-blur-xl flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.5)]">
-               <svg className="w-8 h-8 text-lime-400 drop-shadow-[0_0_10px_rgba(163,230,53,0.5)]" fill="currentColor" viewBox="0 0 24 24">
+            {/* Floating GitHub Physics Ball (Converted from Box to a perfect Orbiting Sphere) */}
+            <div ref={githubBallRef} className="absolute z-30 w-14 h-14 bg-[#111] border border-white/20 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.2)] backdrop-blur-xl">
+               <svg className="w-8 h-8 text-lime-400 drop-shadow-[0_0_8px_rgba(163,230,53,0.6)]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
             </div>
 
             {/* Static Code Tag Decorator */}
-            <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-[#0d0d0d] border border-white/10 rounded-full flex items-center justify-center shadow-2xl z-20 animate-float">
+            <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-[#0d0d0d] border border-white/10 rounded-full flex items-center justify-center shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
               <span className="text-lime-400 font-bold font-mono text-xl">{"</>"}</span>
             </div>
 
@@ -331,7 +368,7 @@ const Home = () => {
               <div className="w-[300px] h-[260px] bg-gradient-to-b from-white/[0.08] to-transparent border border-white/10 backdrop-blur-2xl rounded-[3.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col items-center justify-center p-6">
                 
                 {/* Specular Highlight (Glass Reflection) */}
-                <div className="absolute top-2 left-6 right-6 h-6 bg-gradient-to-b from-white/[0.15] to-transparent rounded-full blur-[2px] pointer-events-none" />
+                <div className="absolute top-2 left-6 right-6 h-6 bg-gradient-to-b from-white/[0.15] to-transparent rounded-full blur-[2px] pointer-events-none z-20" />
 
                 {/* Inner Screen (Face Area) */}
                 <div className="w-full h-full bg-[#030303] rounded-[2.5rem] border border-white/5 shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)] relative flex flex-col items-center justify-center overflow-hidden">
@@ -340,8 +377,8 @@ const Home = () => {
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
                   {/* Emotion Cheeks */}
-                  <div ref={leftCheekRef} className="absolute top-24 left-8 w-12 h-6 bg-lime-400 blur-xl opacity-0 rounded-full transition-opacity duration-200" />
-                  <div ref={rightCheekRef} className="absolute top-24 right-8 w-12 h-6 bg-lime-400 blur-xl opacity-0 rounded-full transition-opacity duration-200" />
+                  <div ref={leftCheekRef} className="absolute top-24 left-8 w-14 h-8 bg-lime-400 blur-[14px] opacity-0 rounded-full will-change-transform" />
+                  <div ref={rightCheekRef} className="absolute top-24 right-8 w-14 h-8 bg-lime-400 blur-[14px] opacity-0 rounded-full will-change-transform" />
 
                   {/* Eyes Container */}
                   <div className="flex gap-10 z-10 relative mt-2">
@@ -349,7 +386,7 @@ const Home = () => {
                     {/* Left Eye Socket */}
                     <div className="w-14 h-16 bg-[#0a0a0a] rounded-full shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] border border-white/5 relative flex items-center justify-center overflow-hidden">
                       {/* Pupil */}
-                      <div ref={leftEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.8)] will-change-transform relative">
+                      <div ref={leftEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_15px_rgba(163,230,53,0.6)] will-change-transform relative">
                         {/* Eye Reflection */}
                         <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-white/80 rounded-full blur-[1px]" />
                       </div>
@@ -358,7 +395,7 @@ const Home = () => {
                     {/* Right Eye Socket */}
                     <div className="w-14 h-16 bg-[#0a0a0a] rounded-full shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] border border-white/5 relative flex items-center justify-center overflow-hidden">
                       {/* Pupil */}
-                      <div ref={rightEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.8)] will-change-transform relative">
+                      <div ref={rightEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_15px_rgba(163,230,53,0.6)] will-change-transform relative">
                         {/* Eye Reflection */}
                         <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-white/80 rounded-full blur-[1px]" />
                       </div>
@@ -371,7 +408,7 @@ const Home = () => {
                     <svg viewBox="0 0 100 50" className="w-16 h-8 overflow-visible">
                       <path 
                         ref={mouthRef}
-                        d="M 15 25 Q 50 30 85 25" 
+                        d="M 20 25 Q 50 30 80 25" 
                         stroke="rgba(163,230,53,0.9)" 
                         strokeWidth="5" 
                         fill="none" 
