@@ -5,13 +5,18 @@ const About = () => {
   const [isVisible, setIsVisible] = useState({});
   const aboutRef = useRef(null);
 
-  // Refined expertise content and logically grouped tools
+  // Unifed Schema: Every object now uses the exact same `categories` structure.
   const expertise = [
     {
       title: "Frontend Architecture",
-      description: "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
-      tools: ["React", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"],
-      icon: "</>"
+      description:
+        "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
+      categories: [
+        { name: "Languages", tools: ["HTML5", "CSS3", "JavaScript"] },
+        { name: "Frameworks", tools: ["React", "Next.js"] },
+        { name: "Styling", tools: ["Tailwind CSS", "Bootstrap"] },
+      ],
+      icon: <span className="font-mono font-bold text-xl">&lt;/&gt;</span>,
     },
     {
       title: "Backend Architecture",
@@ -40,10 +45,15 @@ const About = () => {
     },
     {
       title: "Full-Stack Integration",
-      description: "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
-      tools: ["React", "Javascript", "WordPress", "Figma", "Photoshop","Illustrator","Git & GitHub"],
-      icon: "[ ]"
-    }
+      description:
+        "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
+      categories: [
+        { name: "Development", tools: ["React", "Next.js", "JavaScript", "WordPress"] },
+        { name: "Design Tools", tools: ["Figma", "Photoshop"] },
+        { name: "Workflow", tools: ["Git & GitHub", "Postman", "Docker", "AWS"] },
+      ],
+      icon: <span className="font-mono font-bold text-xl">[ ]</span>,
+    },
   ];
 
   useEffect(() => {
@@ -55,7 +65,7 @@ const About = () => {
           }
         });
       },
-      { threshold: 0.15 },
+      { threshold: 0.15 }
     );
 
     const elements = aboutRef.current?.querySelectorAll("[id]");
@@ -75,7 +85,6 @@ const About = () => {
     <section
       ref={aboutRef}
       className="relative text-white overflow-hidden min-h-screen pt-32 pb-24"
-      id="about"
     >
       {/* Refined Minimal Ambient Lighting */}
       <div className="absolute top-0 right-1/4 w-[800px] h-[600px] bg-lime-500/5 blur-[150px] rounded-full pointer-events-none -translate-y-1/3" />
@@ -134,7 +143,6 @@ const About = () => {
               </p>
 
               <ul className="space-y-3 text-sm">
-
                 <li className="flex justify-between items-center">
                   <span className="text-neutral-500">Focus</span>
                   <span className="text-neutral-300 font-medium">
@@ -144,7 +152,7 @@ const About = () => {
                 <li className="flex justify-between items-center">
                   <span className="text-neutral-500">Experience</span>
                   <span className="text-neutral-300 font-medium">
-                    Junior / Mid-Level
+                   2+ Years
                   </span>
                 </li>
               </ul>
@@ -174,24 +182,23 @@ const About = () => {
                       {item.description}
                     </p>
 
-
-{/* Organized Tech Badges */}
-<div className="flex flex-col gap-4">
-  {item.categories?.map((category) => ( // Added ?. here
-    <div key={category.name} className="flex flex-wrap items-center gap-2">
-      <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold w-24 shrink-0">
-        {category.name}
-      </span>
-      <div className="flex flex-wrap gap-2">
-        {category.tools?.map((tool) => ( // Added ?. here
-          <span key={tool} className="px-3 py-1 text-xs font-medium bg-black/40 text-neutral-300 rounded-lg border border-white/5 transition-colors duration-300 group-hover:border-white/10">
-            {tool}
-          </span>
-        ))}
-      </div>
-    </div>
-  ))}
-</div>
+                    {/* Unified & Organized Tech Badges */}
+                    <div className="flex flex-col gap-4">
+                      {item.categories.map((category) => (
+                        <div key={category.name} className="flex flex-wrap items-center gap-2">
+                          <span className="text-[10px] uppercase tracking-widest text-neutral-600 font-semibold w-24 shrink-0">
+                            {category.name}
+                          </span>
+                          <div className="flex flex-wrap gap-2">
+                            {category.tools.map((tool) => (
+                              <span key={tool} className="px-3 py-1 text-xs font-medium bg-black/40 text-neutral-300 rounded-lg border border-white/5 transition-colors duration-300 group-hover:border-white/10">
+                                {tool}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

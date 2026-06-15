@@ -41,7 +41,7 @@ const Home = () => {
   return (
     <div
       className="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden bg-[#0a0a0a]"
-      id="home"
+      
     >
       {/* Premium Ambient Background */}
       <div className="absolute inset-0 pointer-events-none z-0">

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import emailjs from "@emailjs/browser";
-import { FaWhatsapp } from "react-icons/fa"; // Imported WhatsApp Icon
+import { FaWhatsapp } from "react-icons/fa";
 
 const Contact = () => {
   const [name, setName] = useState("");
@@ -37,14 +37,14 @@ const Contact = () => {
 
     try {
       await emailjs.send(
-        "service_jb5si3h", 
-        "template_djbkjug", 
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         {
           name: name,
           email: email, 
           message: message,
         },
-        "JcFgDr0UzaRME0M9w" 
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY 
       );
 
       toast.success(
@@ -68,13 +68,10 @@ const Contact = () => {
     }
   };
 
-  // WhatsApp Click Handler
-  const handleWhatsAppClick = () => {
-    const phoneNumber = import.meta.env.VITE_phoneNumber; 
-    const waMessage = "Hello Padmanaban! I found your portfolio and would like to connect with you.";
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(waMessage)}`;
-    window.open(whatsappUrl, '_blank');
-  };
+  // WhatsApp Dynamic URL for SEO
+  const phoneNumber = import.meta.env.VITE_phoneNumber; 
+  const waMessage = "Hello Padmanaban! I found your portfolio and would like to connect with you.";
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <motion.div
@@ -82,6 +79,7 @@ const Contact = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="min-h-screen pt-32 pb-24 px-6 lg:px-8 relative overflow-hidden"
+      id="contact"
     >
       {/* Premium Ambient Lighting */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -116,11 +114,13 @@ const Contact = () => {
         }}
       >
         <div className="space-y-6">
+          {/* SEO/A11y Fix: Added htmlFor and id */}
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label htmlFor="user_name" className="block text-sm font-medium text-neutral-300 mb-2">
               Name
             </label>
             <input
+              id="user_name"
               type="text"
               required
               value={name}
@@ -131,10 +131,11 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label htmlFor="user_email" className="block text-sm font-medium text-neutral-300 mb-2">
               Email
             </label>
             <input
+              id="user_email"
               type="email"
               required
               value={email}
@@ -145,10 +146,11 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-neutral-300 mb-2">
+            <label htmlFor="user_message" className="block text-sm font-medium text-neutral-300 mb-2">
               Message
             </label>
             <textarea
+              id="user_message"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -175,19 +177,21 @@ const Contact = () => {
           <div className="h-[1px] flex-1 bg-white/5"></div>
         </div>
 
-        {/* Secondary WhatsApp Section */}
+        {/* Secondary WhatsApp Section - Converted to semantic link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-neutral-400 font-light mb-4">
             You can contact me in WhatsApp also
           </p>
-          <button
-            type="button"
-            onClick={handleWhatsAppClick}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Chat with Padmanaban on WhatsApp"
             className="w-full bg-white/[0.03] border border-white/10 text-white font-medium py-4 rounded-xl hover:bg-[#25D366]/10 hover:border-[#25D366]/30 hover:text-[#25D366] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group"
           >
             <FaWhatsapp className="w-5 h-5 text-neutral-400 group-hover:text-[#25D366] transition-colors duration-300" />
             Chat on WhatsApp
-          </button>
+          </a>
         </div>
 
       </motion.form>
