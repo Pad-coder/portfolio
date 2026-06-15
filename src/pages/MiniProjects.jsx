@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast'; // Imported for the smart popup
+import SEO from '../components/SEO.jsx';
 
 function MiniProjects() {
     // --------------------------------------------------------
@@ -138,6 +139,12 @@ function MiniProjects() {
     return (
         // select-none to completely disable text highlighting/copying
         <div className="min-h-screen relative bg-[#0a0a0a] text-white pt-32 pb-24 overflow-hidden select-none">
+            
+            <SEO 
+              title="Mini Projects & Micro Apps" 
+              description="Explore my interactive React mini-projects, including a Key Event Tracker, Hex Palette Generator, and a CPS testing tool." 
+              url="/mini-projects" 
+            />
             
             {/* Ambient Lighting */}
             <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none" />
