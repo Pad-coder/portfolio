@@ -16,10 +16,12 @@ const Home = () => {
   const rightCheekRef = useRef(null);
   const leftEarRef = useRef(null);
   const rightEarRef = useRef(null);
-  const githubBallRef = useRef(null);
+  const butterflyRef = useRef(null);
+  const leftWingRef = useRef(null);
+  const rightWingRef = useRef(null);
   const robotGlowRef = useRef(null);
 
-  // Physics Engine (Kept in ref to avoid React re-renders, strictly 60fps)
+  // Physics Engine (Stored in ref to avoid React re-renders, strictly 60fps)
   const physics = useRef({
     time: 0,
     mouseX: 0, mouseY: 0,
@@ -27,7 +29,7 @@ const Home = () => {
     eyeX: 0, eyeY: 0, eyeVX: 0, eyeVY: 0,
     
     // Mouth Spring
-    mouthW: 30, mouthH: 5, mouthWV: 0, mouthHV: 0, targetMouthW: 30, targetMouthH: 5,
+    mouthW: 35, mouthH: 8, mouthWV: 0, mouthHV: 0, targetMouthW: 35, targetMouthH: 8,
     
     // Blinking & Winking
     blinkScaleL: 1, blinkScaleR: 1, blinkVL: 0, blinkVR: 0, targetBlinkL: 1, targetBlinkR: 1,
@@ -39,43 +41,48 @@ const Home = () => {
     
     idleFrames: 0,
     emotion: 'neutral',
-    ballX: 0, ballY: 0
+    bugX: 0, bugY: 0
   });
 
-  // Mathematical Spring Formula for organic movement
+  // Mathematical Spring Formula for organic, rubbery movement
   const spring = (val, target, vel, stiffness = 0.1, damping = 0.75) => {
     const force = (target - val) * stiffness;
     vel = (vel + force) * damping;
     return [val + vel, vel];
   };
 
-  const handleMouseMove = useCallback((e) => {
-    // 1. ORIGINAL 3D TILT LOGIC (PRESERVED)
-    const x = (e.clientX - window.innerWidth / 2) * 0.02;
-    const y = (e.clientY - window.innerHeight / 2) * 0.02;
-    
+  // Unified Mouse & Touch Tracker
+  const updateCursorPosition = useCallback((clientX, clientY) => {
+    // 1. 3D Tilt Background
+    const x = (clientX - window.innerWidth / 2) * 0.02;
+    const y = (clientY - window.innerHeight / 2) * 0.02;
     if (visualRef.current) {
       visualRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
     }
 
-    // 2. ROBOT CURSOR TRACKING
+    // 2. Robot Face Tracking
     if (robotRef.current) {
       const rect = robotRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
       
-      physics.current.mouseX = e.clientX - centerX;
-      physics.current.mouseY = e.clientY - centerY;
-      physics.current.idleFrames = 0; // Reset idle timer on move
+      physics.current.mouseX = clientX - centerX;
+      physics.current.mouseY = clientY - centerY;
+      physics.current.idleFrames = 0; // Reset idle timer when interacting
     }
   }, []);
+
+  const handleMouseMove = useCallback((e) => updateCursorPosition(e.clientX, e.clientY), [updateCursorPosition]);
+  const handleTouchMove = useCallback((e) => {
+    if (e.touches.length > 0) updateCursorPosition(e.touches[0].clientX, e.touches[0].clientY);
+  }, [updateCursorPosition]);
 
   // Main 60fps Render Loop
   const renderLoop = useCallback(() => {
     const p = physics.current;
     p.time += 1;
 
-    // Calculate Mouse Speed & Distance for Emotion Heuristics
+    // Calculate Speed & Distance for Emotion Intelligence
     const speedX = p.mouseX - p.lastMouseX;
     const speedY = p.mouseY - p.lastMouseY;
     const speed = Math.sqrt(speedX * speedX + speedY * speedY);
@@ -86,91 +93,88 @@ const Home = () => {
 
     if (speed < 1) p.idleFrames++;
     
-    // --- GITHUB BALL PHYSICS (Orbiting) ---
-    p.ballX = Math.sin(p.time * 0.02) * 140; // Wide Orbit X
-    p.ballY = Math.cos(p.time * 0.015) * 90 - 40 + Math.sin(p.time * 0.08) * 15; // Orbit Y + Bobbing
+    // --- ORGANIC BUTTERFLY PHYSICS ---
+    // Chaotic Lissajous curve for organic bug flight
+    p.bugX = Math.sin(p.time * 0.015) * 180 + Math.cos(p.time * 0.04) * 40; 
+    p.bugY = Math.cos(p.time * 0.012) * 120 - 50 + Math.sin(p.time * 0.07) * 30; 
     
-    if (githubBallRef.current) {
-      githubBallRef.current.style.transform = `translate3d(${p.ballX}px, ${p.ballY}px, 0) rotate(${p.time * 1.5}deg)`;
+    if (butterflyRef.current) {
+      // Rotation follows movement direction slightly
+      const bugRot = Math.sin(p.time * 0.03) * 15;
+      butterflyRef.current.style.transform = `translate3d(${p.bugX}px, ${p.bugY}px, 0) rotate(${bugRot}deg)`;
+    }
+
+    // Butterfly Wings Flutter Animation
+    if (leftWingRef.current && rightWingRef.current) {
+      const flutter = Math.sin(p.time * 0.8) * 50; // Fast wing flapping
+      leftWingRef.current.style.transform = `rotateY(${flutter}deg)`;
+      rightWingRef.current.style.transform = `rotateY(${-flutter}deg)`;
     }
 
     let targetEyeX = p.mouseX;
     let targetEyeY = p.mouseY;
-    let isWatchingBall = false;
     
     // --- EMOTIONAL STATE MACHINE ---
-    if (p.idleFrames > 600) {
-      // SLEEPY (Idle > 10 seconds)
+    if (p.idleFrames > 500) {
+      // SLEEPY (Idle > ~8 seconds)
       p.emotion = 'sleepy';
       p.targetMouthW = 15; p.targetMouthH = 0; // Flat tiny mouth
       p.targetCheekOp = 0; p.targetCheekY = 0;
       p.targetBlinkL = 0.2; p.targetBlinkR = 0.2; // Eyes half closed
-      p.targetHeadTilt = 12; // Head droops to the side
-      targetEyeX = 0; targetEyeY = 20; // Looking down
+      p.targetHeadTilt = 10; // Head droops
+      targetEyeX = 0; targetEyeY = 30; 
     } 
     else if (p.idleFrames > 120) {
-      // CURIOUS (Idle > 2 seconds: Watching the floating GitHub ball)
+      // CURIOUS (Idle > 2 seconds: Watches the glowing butterfly)
       p.emotion = 'curious';
-      isWatchingBall = true;
-      targetEyeX = p.ballX; 
-      targetEyeY = p.ballY;
-      p.targetMouthW = 12; p.targetMouthH = 12; // "Ooh" face
-      p.targetCheekOp = 0.4; p.targetCheekY = -2;
+      targetEyeX = p.bugX; 
+      targetEyeY = p.bugY;
+      p.targetMouthW = 14; p.targetMouthH = 14; // "Ooh" face
+      p.targetCheekOp = 0.3; p.targetCheekY = -2;
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
-      p.targetHeadTilt = (p.ballX / 100) * 15; // Tilts head following the ball
+      p.targetHeadTilt = (p.bugX / 120) * 15; // Tilts head following the butterfly
     } 
     else if (speed > 30) {
       // SURPRISED / DIZZY (Moving mouse very fast)
       p.emotion = 'surprised';
-      p.targetMouthW = 10; p.targetMouthH = 20; // Tall narrow "O" mouth
-      p.targetCheekOp = 0.3; p.targetCheekY = 0;
-      if (!p.isBlinking) { p.targetBlinkL = 1.3; p.targetBlinkR = 1.3; } // Eyes wide open
-      p.targetHeadTilt = (speedX / 50) * 25; // Reactive tilt to momentum
+      p.targetMouthW = 12; p.targetMouthH = 24; // Tall narrow "O" mouth
+      p.targetCheekOp = 0.2; p.targetCheekY = 0;
+      if (!p.isBlinking) { p.targetBlinkL = 1.3; p.targetBlinkR = 1.3; } // Wide eyes
+      p.targetHeadTilt = (speedX / 50) * 20; 
     } 
-    else if (dist < 180) {
-      // HAPPY / EXCITED (Hovering very close to robot)
+    else if (dist < 220) {
+      // HAPPY / EXCITED (Hovering close to face)
       p.emotion = 'happy';
-      p.targetMouthW = 35; p.targetMouthH = 25; // Big wide smile
-      p.targetCheekOp = 0.9; p.targetCheekY = -12; // Glowing cheeks rise up
+      p.targetMouthW = 45; p.targetMouthH = 30; // Big wide smile
+      p.targetCheekOp = 0.9; p.targetCheekY = -15; // Glowing cheeks rise
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
-      p.targetHeadTilt = Math.sin(p.time * 0.1) * 6; // Happy little wiggle
-    } 
-    else if (dist > 500) {
-      // SAD (Cursor abandoned it far away)
-      p.emotion = 'sad';
-      p.targetMouthW = 25; p.targetMouthH = -10; // Frown
-      p.targetCheekOp = 0; p.targetCheekY = 0;
-      if (!p.isBlinking) { p.targetBlinkL = 0.8; p.targetBlinkR = 0.8; }
-      p.targetHeadTilt = -4; // Slight depressed tilt
+      p.targetHeadTilt = Math.sin(p.time * 0.1) * 8; // Happy wiggle
     } 
     else {
-      // NEUTRAL (Normal tracking)
+      // NEUTRAL (Normal cursor tracking)
       p.emotion = 'neutral';
-      p.targetMouthW = 30; p.targetMouthH = 6; // Pleasant curve
-      p.targetCheekOp = 0.2; p.targetCheekY = 0;
+      p.targetMouthW = 35; p.targetMouthH = 8; // Pleasant curve
+      p.targetCheekOp = 0.15; p.targetCheekY = 0;
       if (!p.isBlinking) { p.targetBlinkL = 1; p.targetBlinkR = 1; }
-      p.targetHeadTilt = (p.eyeX / 14) * 8; // Slight tilt depending on where it looks
+      p.targetHeadTilt = (p.eyeX / 16) * 10; // Follows cursor with tilt
     }
 
     // --- RANDOM BLINKING & WINKING ---
     if (!p.isBlinking && Math.random() < 0.008) {
       p.isBlinking = true;
-      
-      // 15% chance to wink if happy or neutral
-      if (Math.random() < 0.15 && (p.emotion === 'happy' || p.emotion === 'neutral')) {
-        p.targetBlinkL = 0.05; // Wink left eye
+      if (Math.random() < 0.15 && p.emotion === 'happy') {
+        p.targetBlinkL = 0.05; // Happy wink
         setTimeout(() => { p.targetBlinkL = 1; p.isBlinking = false; }, 200);
       } else {
-        // Normal Blink
-        p.targetBlinkL = 0.05; p.targetBlinkR = 0.05; 
+        p.targetBlinkL = 0.05; p.targetBlinkR = 0.05; // Normal Blink
         setTimeout(() => { p.targetBlinkL = 1; p.targetBlinkR = 1; p.isBlinking = false; }, 150);
       }
     }
 
     // --- APPLY PHYSICS SPRINGS ---
-    // 1. Eye Position Constraint
-    let destEyeX = Math.max(-14, Math.min(14, targetEyeX / 15));
-    let destEyeY = Math.max(-12, Math.min(12, targetEyeY / 15));
+    // 1. Eye Position (Scaled up bounds for bigger face)
+    let destEyeX = Math.max(-18, Math.min(18, targetEyeX / 12));
+    let destEyeY = Math.max(-16, Math.min(16, targetEyeY / 12));
 
     [p.eyeX, p.eyeVX] = spring(p.eyeX, destEyeX, p.eyeVX, 0.15, 0.7);
     [p.eyeY, p.eyeVY] = spring(p.eyeY, destEyeY, p.eyeVY, 0.15, 0.7);
@@ -179,12 +183,12 @@ const Home = () => {
     [p.mouthW, p.mouthWV] = spring(p.mouthW, p.targetMouthW, p.mouthWV, 0.12, 0.7);
     [p.mouthH, p.mouthHV] = spring(p.mouthH, p.targetMouthH, p.mouthHV, 0.12, 0.7);
 
-    // 3. Blinking / Winking
+    // 3. Blinking
     [p.blinkScaleL, p.blinkVL] = spring(p.blinkScaleL, p.targetBlinkL, p.blinkVL, 0.3, 0.5);
     [p.blinkScaleR, p.blinkVR] = spring(p.blinkScaleR, p.targetBlinkR, p.blinkVR, 0.3, 0.5);
 
     // 4. Cheeks & Head Tilt
-    [p.cheekOp] = spring(p.cheekOp, p.targetCheekOp, 0, 0.05, 0.8); // Direct lerp for opacity
+    [p.cheekOp] = spring(p.cheekOp, p.targetCheekOp, 0, 0.05, 0.8);
     [p.cheekY, p.cheekVY] = spring(p.cheekY, p.targetCheekY, p.cheekVY, 0.1, 0.7);
     [p.headTilt, p.headTiltV] = spring(p.headTilt, p.targetHeadTilt, p.headTiltV, 0.08, 0.75);
 
@@ -193,8 +197,8 @@ const Home = () => {
     if (rightEyeRef.current) rightEyeRef.current.style.transform = `translate3d(${p.eyeX}px, ${p.eyeY}px, 0) scaleY(${p.blinkScaleR})`;
 
     if (mouthRef.current) {
-      // Procedural SVG Quadratic Bezier Curve for infinite mouth shapes
-      mouthRef.current.setAttribute('d', `M ${50 - p.mouthW} 25 Q 50 ${25 + p.mouthH} ${50 + p.mouthW} 25`);
+      // Procedural SVG Quadratic Bezier Curve for infinite mouth shapes (Scaled for larger face)
+      mouthRef.current.setAttribute('d', `M ${60 - p.mouthW} 35 Q 60 ${35 + p.mouthH} ${60 + p.mouthW} 35`);
     }
 
     if (leftCheekRef.current && rightCheekRef.current) {
@@ -207,7 +211,7 @@ const Home = () => {
     // Breathing Engine & Body Movement
     if (robotRef.current) {
       const breathSpeed = p.emotion === 'sleepy' ? 0.02 : 0.06;
-      const breathDepth = p.emotion === 'sleepy' ? 6 : 3;
+      const breathDepth = p.emotion === 'sleepy' ? 8 : 4;
       const breathY = Math.sin(p.time * breathSpeed) * breathDepth;
       
       robotRef.current.style.transform = `translateY(${breathY}px) rotateZ(${p.headTilt}deg)`;
@@ -215,14 +219,14 @@ const Home = () => {
 
     // Ambient Glow reacts to happiness
     if (robotGlowRef.current) {
-      const glowScale = 1 + (p.cheekOp * 0.3);
+      const glowScale = 1 + (p.cheekOp * 0.4);
       robotGlowRef.current.style.transform = `scale(${glowScale})`;
-      robotGlowRef.current.style.opacity = 0.15 + (p.cheekOp * 0.2);
+      robotGlowRef.current.style.opacity = 0.15 + (p.cheekOp * 0.25);
     }
 
     // Antennas react to mood
     if (leftEarRef.current && rightEarRef.current) {
-      const earRot = Math.sin(p.time * 0.1) * (p.emotion === 'happy' ? 15 : 2);
+      const earRot = Math.sin(p.time * 0.1) * (p.emotion === 'happy' ? 18 : 3);
       leftEarRef.current.style.transform = `rotate(${-earRot}deg)`;
       rightEarRef.current.style.transform = `rotate(${earRot}deg)`;
     }
@@ -233,13 +237,18 @@ const Home = () => {
   useEffect(() => {
     setIsVisible(true);
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchstart", handleTouchMove, { passive: true });
+    
     rafRef.current = requestAnimationFrame(renderLoop);
     
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchMove);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleMouseMove, renderLoop]);
+  }, [handleMouseMove, handleTouchMove, renderLoop]);
 
   const scrollToSection = (sectionId) => {
     document
@@ -253,16 +262,24 @@ const Home = () => {
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-lime-500/10 blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-neutral-800/50 blur-[120px] rounded-full mix-blend-screen" />
-        {/* Subtle grid texture */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mt-8 lg:mt-0">
         
         {/* ========================================= */}
-        {/* LEFT CONTENT COLUMN - COMPLETELY PRESERVED */}
+        {/* LEFT CONTENT COLUMN */}
         {/* ========================================= */}
         <div className="flex flex-col items-center lg:items-start text-center lg:text-left pt-10 lg:pt-0">
+          
+          {/* Mobile Notice (Visible only on small screens) */}
+          <div className={`lg:hidden flex items-center justify-center gap-2 mb-8 px-5 py-3 bg-white/[0.03] border border-white/10 rounded-2xl backdrop-blur-md transition-all duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
+             <span className="text-lime-400 text-lg">✨</span>
+             <span className="text-xs sm:text-sm text-neutral-400 font-light text-left leading-relaxed">
+               For the ultimate 60FPS physics experience, explore this site on a desktop!
+             </span>
+          </div>
+
           <div className={`transition-all duration-1000 ease-out ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
             <div className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md mb-8 hover:bg-white/[0.05] hover:border-white/20 transition-colors cursor-default">
               <span className="relative flex h-2 w-2">
@@ -332,88 +349,98 @@ const Home = () => {
         </div>
 
         {/* ========================================= */}
-        {/* RIGHT VISUAL CENTERPIECE - ROBOT COMPANION */}
+        {/* RIGHT VISUAL CENTERPIECE - BIGGER ROBOT + BUTTERFLY */}
         {/* ========================================= */}
-        <div className={`hidden lg:flex relative h-full items-center justify-center transition-all duration-1000 ease-out delay-500 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
+        <div className={`flex relative h-full items-center justify-center transition-all duration-1000 ease-out delay-500 mt-16 lg:mt-0 scale-75 sm:scale-90 lg:scale-100 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
           
           <div ref={visualRef} className="relative w-full max-w-lg flex items-center justify-center" style={{ perspective: "1000px" }}>
             
             {/* Dynamic Mood Glow */}
-            <div ref={robotGlowRef} className="absolute inset-0 bg-lime-400 blur-[90px] rounded-full transition-opacity duration-300" style={{ opacity: 0.15 }} />
+            <div ref={robotGlowRef} className="absolute inset-0 bg-lime-400 blur-[100px] rounded-full transition-opacity duration-300" style={{ opacity: 0.15 }} />
 
-            {/* Floating GitHub Physics Ball (Converted from Box to a perfect Orbiting Sphere) */}
-            <div ref={githubBallRef} className="absolute z-30 w-14 h-14 bg-[#111] border border-white/20 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.2)] backdrop-blur-xl">
-               <svg className="w-8 h-8 text-lime-400 drop-shadow-[0_0_8px_rgba(163,230,53,0.6)]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            {/* THE CODE BUTTERFLY (Replaces Github Ball) */}
+            <div ref={butterflyRef} className="absolute z-30 flex items-center justify-center will-change-transform pointer-events-none">
+              {/* Custom SVG Butterfly representing </> and {} code symbols */}
+              <svg viewBox="0 0 24 24" className="w-12 h-12 text-lime-400 drop-shadow-[0_0_15px_rgba(163,230,53,0.9)] overflow-visible">
+                {/* Left Wing (Looks like < or { ) */}
+                <g ref={leftWingRef} style={{ transformOrigin: '12px 12px', willChange: 'transform' }}>
+                  <path d="M12,12 C6,2 0,6 4,18 C6,22 10,16 12,12 Z" fill="currentColor" opacity="0.8" />
+                  <path d="M12,12 C8,6 4,8 6,14 C7,16 9,14 12,12 Z" fill="#fff" opacity="0.6" />
+                </g>
+                {/* Right Wing (Looks like > or } ) */}
+                <g ref={rightWingRef} style={{ transformOrigin: '12px 12px', willChange: 'transform' }}>
+                  <path d="M12,12 C18,2 24,6 20,18 C18,22 14,16 12,12 Z" fill="currentColor" opacity="0.8" />
+                  <path d="M12,12 C16,6 20,8 18,14 C17,16 15,14 12,12 Z" fill="#fff" opacity="0.6" />
+                </g>
+                {/* Glowing Core / Body */}
+                <rect x="11.2" y="8" width="1.6" height="8" rx="0.8" fill="#fff" className="drop-shadow-[0_0_5px_#fff]" />
               </svg>
             </div>
 
-            {/* Static Code Tag Decorator */}
-            <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-[#0d0d0d] border border-white/10 rounded-full flex items-center justify-center shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
-              <span className="text-lime-400 font-bold font-mono text-xl">{"</>"}</span>
+            {/* Static Code Tag Decorator (Moved slightly further out) */}
+            <div className="absolute -bottom-16 -left-12 w-24 h-24 bg-[#0d0d0d] border border-white/10 rounded-full flex items-center justify-center shadow-2xl z-20 animate-float" style={{ animationDelay: '1s' }}>
+              <span className="text-lime-400 font-bold font-mono text-2xl">{"</>"}</span>
             </div>
 
-            {/* === THE ROBOT CHARACTER === */}
+            {/* === THE ROBOT CHARACTER (SCALED UP) === */}
             <div ref={robotRef} className="relative z-10 will-change-transform">
               
-              {/* Ears / Antennas */}
-              <div className="absolute top-1/2 -left-4 w-6 h-12 bg-white/5 border border-white/10 rounded-l-full backdrop-blur-md shadow-lg" ref={leftEarRef} style={{ transformOrigin: 'right center' }}>
-                <div className="absolute top-1/2 left-2 w-1.5 h-4 bg-lime-400/50 rounded-full -translate-y-1/2" />
+              {/* Ears / Antennas (Slightly larger) */}
+              <div className="absolute top-1/2 -left-5 w-8 h-16 bg-white/5 border border-white/10 rounded-l-full backdrop-blur-md shadow-lg" ref={leftEarRef} style={{ transformOrigin: 'right center' }}>
+                <div className="absolute top-1/2 left-2.5 w-2 h-5 bg-lime-400/50 rounded-full -translate-y-1/2" />
               </div>
-              <div className="absolute top-1/2 -right-4 w-6 h-12 bg-white/5 border border-white/10 rounded-r-full backdrop-blur-md shadow-lg" ref={rightEarRef} style={{ transformOrigin: 'left center' }}>
-                 <div className="absolute top-1/2 right-2 w-1.5 h-4 bg-lime-400/50 rounded-full -translate-y-1/2" />
+              <div className="absolute top-1/2 -right-5 w-8 h-16 bg-white/5 border border-white/10 rounded-r-full backdrop-blur-md shadow-lg" ref={rightEarRef} style={{ transformOrigin: 'left center' }}>
+                 <div className="absolute top-1/2 right-2.5 w-2 h-5 bg-lime-400/50 rounded-full -translate-y-1/2" />
               </div>
 
-              {/* Main Glass Head */}
-              <div className="w-[300px] h-[260px] bg-gradient-to-b from-white/[0.08] to-transparent border border-white/10 backdrop-blur-2xl rounded-[3.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative overflow-hidden flex flex-col items-center justify-center p-6">
+              {/* Main Glass Head (Increased width and height) */}
+              <div className="w-[360px] h-[310px] bg-gradient-to-b from-white/[0.08] to-transparent border border-white/10 backdrop-blur-2xl rounded-[4rem] shadow-[0_25px_60px_rgba(0,0,0,0.6)] relative overflow-hidden flex flex-col items-center justify-center p-7">
                 
                 {/* Specular Highlight (Glass Reflection) */}
-                <div className="absolute top-2 left-6 right-6 h-6 bg-gradient-to-b from-white/[0.15] to-transparent rounded-full blur-[2px] pointer-events-none z-20" />
+                <div className="absolute top-2 left-8 right-8 h-8 bg-gradient-to-b from-white/[0.15] to-transparent rounded-full blur-[2px] pointer-events-none z-20" />
 
-                {/* Inner Screen (Face Area) */}
-                <div className="w-full h-full bg-[#030303] rounded-[2.5rem] border border-white/5 shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)] relative flex flex-col items-center justify-center overflow-hidden">
+                {/* Inner Screen (Face Area - Larger) */}
+                <div className="w-full h-full bg-[#030303] rounded-[3rem] border border-white/5 shadow-[inset_0_12px_40px_rgba(0,0,0,0.9)] relative flex flex-col items-center justify-center overflow-hidden">
                   
-                  {/* Digital Screen Scanlines (Subtle) */}
+                  {/* Digital Screen Scanlines */}
                   <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none" />
 
-                  {/* Emotion Cheeks */}
-                  <div ref={leftCheekRef} className="absolute top-24 left-8 w-14 h-8 bg-lime-400 blur-[14px] opacity-0 rounded-full will-change-transform" />
-                  <div ref={rightCheekRef} className="absolute top-24 right-8 w-14 h-8 bg-lime-400 blur-[14px] opacity-0 rounded-full will-change-transform" />
+                  {/* Emotion Cheeks (Adjusted for larger face) */}
+                  <div ref={leftCheekRef} className="absolute top-32 left-10 w-16 h-10 bg-lime-400 blur-[18px] opacity-0 rounded-full will-change-transform" />
+                  <div ref={rightCheekRef} className="absolute top-32 right-10 w-16 h-10 bg-lime-400 blur-[18px] opacity-0 rounded-full will-change-transform" />
 
-                  {/* Eyes Container */}
-                  <div className="flex gap-10 z-10 relative mt-2">
+                  {/* Eyes Container (Wider gap) */}
+                  <div className="flex gap-14 z-10 relative mt-4">
                     
-                    {/* Left Eye Socket */}
-                    <div className="w-14 h-16 bg-[#0a0a0a] rounded-full shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] border border-white/5 relative flex items-center justify-center overflow-hidden">
+                    {/* Left Eye Socket (Larger) */}
+                    <div className="w-16 h-20 bg-[#0a0a0a] rounded-full shadow-[inset_0_5px_15px_rgba(0,0,0,0.9)] border border-white/5 relative flex items-center justify-center overflow-hidden">
                       {/* Pupil */}
-                      <div ref={leftEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_15px_rgba(163,230,53,0.6)] will-change-transform relative">
-                        {/* Eye Reflection */}
-                        <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-white/80 rounded-full blur-[1px]" />
+                      <div ref={leftEyeRef} className="w-10 h-12 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.7)] will-change-transform relative">
+                        <div className="absolute top-2 right-2 w-3 h-3 bg-white/80 rounded-full blur-[1px]" />
                       </div>
                     </div>
 
-                    {/* Right Eye Socket */}
-                    <div className="w-14 h-16 bg-[#0a0a0a] rounded-full shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] border border-white/5 relative flex items-center justify-center overflow-hidden">
+                    {/* Right Eye Socket (Larger) */}
+                    <div className="w-16 h-20 bg-[#0a0a0a] rounded-full shadow-[inset_0_5px_15px_rgba(0,0,0,0.9)] border border-white/5 relative flex items-center justify-center overflow-hidden">
                       {/* Pupil */}
-                      <div ref={rightEyeRef} className="w-8 h-10 bg-lime-400 rounded-full shadow-[0_0_15px_rgba(163,230,53,0.6)] will-change-transform relative">
-                        {/* Eye Reflection */}
-                        <div className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-white/80 rounded-full blur-[1px]" />
+                      <div ref={rightEyeRef} className="w-10 h-12 bg-lime-400 rounded-full shadow-[0_0_20px_rgba(163,230,53,0.7)] will-change-transform relative">
+                        <div className="absolute top-2 right-2 w-3 h-3 bg-white/80 rounded-full blur-[1px]" />
                       </div>
                     </div>
 
                   </div>
 
-                  {/* Dynamic SVG Mouth */}
-                  <div className="z-10 mt-6 relative">
-                    <svg viewBox="0 0 100 50" className="w-16 h-8 overflow-visible">
+                  {/* Dynamic SVG Mouth (Scaled Up) */}
+                  <div className="z-10 mt-8 relative">
+                    <svg viewBox="0 0 120 60" className="w-24 h-12 overflow-visible">
                       <path 
                         ref={mouthRef}
-                        d="M 20 25 Q 50 30 80 25" 
+                        d="M 25 35 Q 60 43 95 35" 
                         stroke="rgba(163,230,53,0.9)" 
-                        strokeWidth="5" 
+                        strokeWidth="6" 
                         fill="none" 
                         strokeLinecap="round" 
-                        className="drop-shadow-[0_0_8px_rgba(163,230,53,0.6)]"
+                        className="drop-shadow-[0_0_10px_rgba(163,230,53,0.7)]"
                       />
                     </svg>
                   </div>
@@ -428,7 +455,7 @@ const Home = () => {
       </div>
 
       {/* Premium Scroll Indicator */}
-      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-all duration-1000 delay-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
+      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-all duration-1000 delay-1000 hidden lg:flex ${isVisible ? "opacity-100" : "opacity-0"}`}>
         <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-semibold">Scroll</span>
         <div className="w-[1px] h-12 bg-gradient-to-b from-neutral-500 to-transparent">
           <div className="w-full h-1/2 bg-lime-400 animate-slide-down"></div>
