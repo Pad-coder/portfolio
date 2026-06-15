@@ -79,7 +79,7 @@ function Footer() {
           <div>
             <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-6">Contact</h4>
             <div className="flex flex-col space-y-4">
-              <span className="text-neutral-400 text-sm font-light">Chennai, Tamil Nadu, India</span>
+              <span className="text-neutral-400 text-sm font-light">Tamil Nadu, India</span>
               <a href="mailto:padmanaban870@gmail.com" className="text-neutral-400 text-sm font-light hover:text-lime-400 transition-colors">
                 padmanaban870@gmail.com
               </a>
