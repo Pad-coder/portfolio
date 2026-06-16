@@ -180,30 +180,10 @@ const Projects = () => {
     },
   ];
 
-  const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
   return (
-    <div className="min-h-screen bg-[#050505] text-white relative overflow-hidden cursor-none">
-
-      {/* Premium Ambient Background */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        {/* Deep noise texture */}
-        <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay">
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter>
-            <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
-          </svg>
-        </div>
-        
-        {/* Soft radial glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-lime-500/5 blur-[150px] rounded-full" />
-      </div>
-
+    <div className="relative w-full min-h-screen text-white cursor-none">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 relative z-10 max-w-7xl">
-
-        {/* Header - Elegant Typography */}
+        
         <FadeIn delay={100} className="text-center mb-20 lg:mb-32">
           <span className="inline-block text-lime-400 text-sm font-semibold tracking-[0.2em] uppercase mb-4">
             Selected Works
@@ -216,7 +196,6 @@ const Projects = () => {
           </p>
         </FadeIn>
 
-        {/* Projects List */}
         <div className="space-y-16 lg:space-y-24">
           {portfolio.map((project, idx) => (
             <FadeIn key={idx} delay={200 + (idx * 100)}>
@@ -224,19 +203,18 @@ const Projects = () => {
             </FadeIn>
           ))}
         </div>
-        
-        {/* Premium CTA Section for Mini Projects */}
+                 
         <FadeIn delay={400} className="mt-32 max-w-4xl mx-auto text-center">
-          <div className="relative rounded-[3rem] p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-white/[0.04] to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
+          <div className="relative rounded-[3rem] p-12 lg:p-20 overflow-hidden bg-gradient-to-b from-white/[0.04] to-transparent shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-md">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-lime-400/10 blur-[80px] rounded-full pointer-events-none" />
-            
+                         
             <h3 className="text-3xl lg:text-5xl font-bold text-white mb-6 tracking-tight relative z-10">
               More Explorations.
             </h3>
             <p className="text-neutral-400 text-base lg:text-lg mb-10 max-w-2xl mx-auto font-light leading-relaxed relative z-10">
               Discover smaller projects, UI experiments, and technical deep-dives to see my day-to-day coding practices.
             </p>
-            
+                         
             <a
               href="/mini-projects"
               className="relative z-10 inline-flex items-center justify-center px-10 py-4 bg-white text-neutral-950 font-semibold rounded-2xl transition-all duration-300 hover:bg-lime-400 hover:scale-[1.02] shadow-[0_10px_40px_rgba(255,255,255,0.1)] active:scale-95"
@@ -245,8 +223,7 @@ const Projects = () => {
             </a>
           </div>
         </FadeIn>
-        
-        {/* Refined Roadmap / Coming Soon Indicator */}
+                 
         <FadeIn delay={600} className="mt-24 max-w-3xl mx-auto text-center cursor-none">
           <div className="flex flex-col items-center justify-center py-12">
             <div className="flex items-center gap-3 mb-6 px-5 py-2.5 rounded-full bg-white/[0.02] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
@@ -267,7 +244,6 @@ const Projects = () => {
             </p>
           </div>
         </FadeIn>
-
       </div>
     </div>
   );

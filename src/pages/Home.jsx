@@ -14,22 +14,12 @@ const Home = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden bg-[#0a0a0a]">
-      
-      {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-lime-500/10 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-neutral-800/50 blur-[120px] rounded-full mix-blend-screen" />
-        {/* The Grid Texture Div has been removed from here */}
-      </div>
-
-      {/* Hero Layout Grid */}
+    <div className="relative w-full min-h-screen flex items-center justify-center pt-20 pb-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mt-8 lg:mt-0">
         <HeroContent isVisible={isVisible} scrollToSection={scrollToSection} />
         <RobotCompanion isVisible={isVisible} />
       </div>
 
-      {/* Scroll Indicator */}
       <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 transition-all duration-1000 delay-1000 hidden lg:flex ${isVisible ? "opacity-100" : "opacity-0"}`}>
         <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-500 font-semibold">Scroll</span>
         <div className="w-[1px] h-12 bg-gradient-to-b from-neutral-500 to-transparent">

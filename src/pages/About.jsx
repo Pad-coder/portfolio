@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
-// ==========================================
-// 1. REUSABLE MICRO-COMPONENTS
-// ==========================================
-
 const FadeIn = ({ children, delay = 0, className = "" }) => {
   const [isVisible, setIsVisible] = useState(false);
   const domRef = useRef();
@@ -226,6 +222,8 @@ const ExpertiseCard = ({ item }) => (
 // 3. MAIN ASSEMBLED PAGE
 // ==========================================
 
+
+
 const About = () => {
   const expertise = [
     {
@@ -265,38 +263,21 @@ const About = () => {
   };
 
   return (
-    <section id="about" className="relative text-white overflow-hidden min-h-screen pt-32 pb-24 bg-[#0a0a0a]">
-      
-      {/* --- Ambient Background & Premium Noise --- */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay z-0">
-        <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-          <filter id="aboutNoise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter>
-          <rect width="100%" height="100%" filter="url(#aboutNoise)"/>
-        </svg>
-      </div>
-     
-      {/* Soft Light */}
-      <div className="absolute top-0 right-1/4 w-[800px] h-[800px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none -translate-y-1/2" />
-
+    <div className="relative w-full min-h-screen pt-32 pb-24 text-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        
-        {/* Section Header */}
+                 
         <FadeIn delay={100} className="mb-16">
           <h2 className="text-sm font-semibold text-lime-400 tracking-[0.2em] uppercase mb-3">About Me</h2>
           <p className="text-3xl md:text-5xl font-bold text-white tracking-tight">Engineering Digital Experiences.</p>
         </FadeIn>
 
-        {/* 12-Column Premium Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-32 items-stretch">
-          
-          {/* Left Column (Profile & Stats) - 4/12 */}
           <div className="lg:col-span-4 lg:sticky lg:top-32 h-max">
             <FadeIn delay={200} className="h-full">
               <ProfileCard />
             </FadeIn>
           </div>
-
-          {/* Right Column (Expertise Iteration) - 8/12 */}
+          
           <div className="lg:col-span-8 flex flex-col gap-6">
             {expertise.map((item, index) => (
               <FadeIn key={item.title} delay={300 + index * 150}>
@@ -304,23 +285,17 @@ const About = () => {
               </FadeIn>
             ))}
           </div>
-
         </div>
 
-        {/* Premium CTA Section */}
         <FadeIn delay={500}>
           <div className="relative max-w-5xl mx-auto text-center bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 rounded-[3rem] p-12 sm:p-20 overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
-            {/* CTA Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-lime-400/10 blur-[80px] rounded-full pointer-events-none" />
-
             <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight relative z-10">
               Let's Build Something <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">Great</span>.
             </h3>
-
             <p className="text-neutral-400 text-base sm:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-10 relative z-10">
               Whether you have a startup idea, need a technical partner, or want to revamp an existing product, I'm ready to help turn your vision into reality.
             </p>
-
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10">
               <button
                 onClick={() => scrollToSection("contact")}
@@ -331,13 +306,11 @@ const About = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </button>
-
             </div>
           </div>
         </FadeIn>
-
       </div>
-    </section>
+    </div>
   );
 };
 
