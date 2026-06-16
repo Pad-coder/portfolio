@@ -17,7 +17,7 @@ const HeroContent = ({ isVisible, scrollToSection }) => {
       </div>
 
       <h1 className={`text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1] sm:leading-[1.1] transition-all duration-1000 ease-out delay-150 ${isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"}`}>
-        Building
+        Building{"  "}
         <br className="hidden lg:block" />
         <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">
           Digital Products
