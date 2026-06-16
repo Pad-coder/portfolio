@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import emailjs from "@emailjs/browser";
-import { FaWhatsapp, FaGithub, FaLinkedin, FaInstagram, FaPaperPlane } from "react-icons/fa";
+import {
+  FaWhatsapp,
+  FaGithub,
+  FaLinkedin,
+  FaInstagram,
+  FaPaperPlane,
+} from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { FiMapPin, FiMail, FiClock, FiGlobe, FiCheck } from "react-icons/fi";
 
@@ -21,7 +27,7 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     );
     if (domRef.current) observer.observe(domRef.current);
     return () => observer.disconnect();
@@ -31,7 +37,9 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
     <div
       ref={domRef}
       className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${
-        isVisible ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-95"
+        isVisible
+          ? "opacity-100 translate-y-0 scale-100"
+          : "opacity-0 translate-y-8 scale-95"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -42,19 +50,21 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
 
 const Input = ({ label, id, type = "text", valid, ...props }) => {
   const [isFocused, setIsFocused] = useState(false);
-  
+
   return (
     <div className="flex flex-col gap-2 w-full group relative">
-      <label 
-        htmlFor={id} 
+      <label
+        htmlFor={id}
         className="text-[11px] font-semibold text-neutral-500 uppercase tracking-widest ml-1 transition-colors duration-300 group-focus-within:text-lime-400"
       >
         {label}
       </label>
       <div className="relative">
         {/* Soft Animated Background Glow */}
-        <div className={`absolute -inset-0.5 bg-gradient-to-r from-lime-400/0 via-lime-400/20 to-lime-400/0 rounded-[18px] blur-md opacity-0 transition-opacity duration-500 pointer-events-none ${isFocused ? 'opacity-100' : 'group-hover:opacity-40'}`} />
-        
+        <div
+          className={`absolute -inset-0.5 bg-gradient-to-r from-lime-400/0 via-lime-400/20 to-lime-400/0 rounded-[18px] blur-md opacity-0 transition-opacity duration-500 pointer-events-none ${isFocused ? "opacity-100" : "group-hover:opacity-40"}`}
+        />
+
         {type === "textarea" ? (
           <textarea
             id={id}
@@ -73,9 +83,11 @@ const Input = ({ label, id, type = "text", valid, ...props }) => {
             {...props}
           />
         )}
-        
+
         {/* Success Indicator */}
-        <div className={`absolute right-4 top-1/2 -translate-y-1/2 text-lime-400 transition-all duration-500 pointer-events-none ${valid ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
+        <div
+          className={`absolute right-4 top-1/2 -translate-y-1/2 text-lime-400 transition-all duration-500 pointer-events-none ${valid ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
+        >
           <FiCheck className="w-5 h-5" />
         </div>
       </div>
@@ -89,12 +101,12 @@ const InfoCard = ({ icon, text, highlight }) => (
       {icon}
     </div>
     <span
-  className={`text-sm font-medium break-all transition-colors duration-300 ${
-    highlight
-      ? "text-white group-hover:text-lime-300"
-      : "text-neutral-400 group-hover:text-white"
-  }`}
->
+      className={`text-sm font-medium break-all transition-colors duration-300 ${
+        highlight
+          ? "text-white group-hover:text-lime-300"
+          : "text-neutral-400 group-hover:text-white"
+      }`}
+    >
       {text}
     </span>
   </div>
@@ -119,13 +131,18 @@ const Contact = () => {
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const isNameValid = name.length >= 2;
   const isEmailValid = validateEmail(email);
-  const isMessageValid = message.length >= 10;
+
+  const isMessageValid = message.length >= 2;
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!isNameValid || !isEmailValid || !isMessageValid) {
       toast.error("Please fill all fields correctly.", {
-        style: { background: '#171717', color: '#fff', border: '1px solid #262626' }
+        style: {
+          background: "#171717",
+          color: "#fff",
+          border: "1px solid #262626",
+        },
       });
       return;
     }
@@ -137,42 +154,60 @@ const Contact = () => {
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
         { name, email, message },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY 
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
       );
 
-      toast.success(
-        `Thank you ${name}! I'll reply soon.`, {
-          style: { background: '#171717', color: '#fff', border: '1px solid #a3e635' },
-          icon: '🚀'
-        }
-      );
+      toast.success(`Thank you ${name}! I'll reply soon.`, {
+        style: {
+          background: "#171717",
+          color: "#fff",
+          border: "1px solid #a3e635",
+        },
+        icon: "🚀",
+      });
 
-      setName(""); setEmail(""); setMessage("");
+      setName("");
+      setEmail("");
+      setMessage("");
     } catch (error) {
       console.error("EmailJS Error:", error);
       toast.error("Something went wrong. Please try again!", {
-        style: { background: '#171717', color: '#fff', border: '1px solid #ef4444' }
+        style: {
+          background: "#171717",
+          color: "#fff",
+          border: "1px solid #ef4444",
+        },
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const phoneNumber = import.meta.env.VITE_phoneNumber; 
-  const waMessage = "Hello Padmanaban! I found your portfolio and would like to connect with you.";
+  const phoneNumber = import.meta.env.VITE_phoneNumber;
+  const waMessage =
+    "Hello Padmanaban! I found your portfolio and would like to connect with you.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(waMessage)}`;
 
   return (
-    <section id="contact" className="relative min-h-screen pt-32 pb-24 overflow-hidden text-neutral-300">
-      
+    <section
+      id="contact"
+      className="relative min-h-screen pt-32 pb-24 overflow-hidden text-neutral-300"
+    >
       {/* Premium Ambient Lighting & Textures */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[800px] h-[800px] bg-lime-500/10 blur-[150px] rounded-full mix-blend-screen" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)]" />
         <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay">
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <filter id="noiseContact"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter>
-            <rect width="100%" height="100%" filter="url(#noiseContact)"/>
+            <filter id="noiseContact">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.8"
+                numOctaves="3"
+                stitchTiles="stitch"
+              />
+            </filter>
+            <rect width="100%" height="100%" filter="url(#noiseContact)" />
           </svg>
         </div>
       </div>
@@ -180,7 +215,6 @@ const Contact = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         {/* Responsive 2-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
           {/* ========================================== */}
           {/* LEFT SIDE: Information & Branding            */}
           {/* ========================================== */}
@@ -195,25 +229,43 @@ const Contact = () => {
                   Available for Freelance
                 </span>
               </div>
-              
+
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-4">
-                Let's build <br className="hidden sm:block"/>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">together.</span>
+                Let's build <br className="hidden sm:block" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">
+                  together.
+                </span>
               </h2>
               <p className="text-neutral-400 text-base sm:text-lg font-light leading-relaxed max-w-md">
-                Whether you have a specific project in mind or just want to explore possibilities, I'm ready to bring your vision to reality.
+                Whether you have a specific project in mind or just want to
+                explore possibilities, I'm ready to bring your vision to
+                reality.
               </p>
             </FadeIn>
 
             {/* Compact 2x2 Grid for Info Cards */}
-            <FadeIn delay={200} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4">
-              <InfoCard icon={<FiMapPin className="w-4 h-4"/>} text="Chennai, India" />
-              <InfoCard icon={<FiGlobe className="w-4 h-4"/>} text="Open Worldwide" />
-              <InfoCard icon={<FiMail className="w-4 h-4"/>} text="padmanaban870@gmail.com" highlight />
-              <InfoCard icon={<FiClock className="w-4 h-4"/>} text="Replies in 24h" />
+            <FadeIn
+              delay={200}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-4"
+            >
+              <InfoCard
+                icon={<FiMapPin className="w-4 h-4" />}
+                text="Chennai, India"
+              />
+              <InfoCard
+                icon={<FiGlobe className="w-4 h-4" />}
+                text="Open Worldwide"
+              />
+              <InfoCard
+                icon={<FiMail className="w-4 h-4" />}
+                text="padmanaban870@gmail.com"
+                highlight
+              />
+              <InfoCard
+                icon={<FiClock className="w-4 h-4" />}
+                text="Replies in 24h"
+              />
             </FadeIn>
-
-
           </div>
 
           {/* ========================================== */}
@@ -222,81 +274,79 @@ const Contact = () => {
           <div className="md:col-span-7">
             <FadeIn delay={400}>
               <div className="relative rounded-[2rem] bg-gradient-to-b from-white/[0.04] to-transparent p-[1px] shadow-[0_20px_40px_rgba(0,0,0,0.6)] group/form">
-                
                 {/* Form Ambient Glow */}
                 <div className="absolute inset-0 bg-lime-400/10 blur-2xl rounded-[2rem] opacity-0 group-hover/form:opacity-100 transition-opacity duration-700 pointer-events-none z-0" />
-                
+
                 <div className="relative bg-[#0a0a0a]/80 backdrop-blur-2xl rounded-[2rem] p-6 sm:p-8 lg:p-10 border border-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] z-10">
                   <form onSubmit={sendMessage} className="flex flex-col gap-6">
-                    
                     {/* Compact First Row */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <Input 
-                        label="Name" 
-                        id="name" 
-                        placeholder="Tell me your name..." 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
-                        valid={isNameValid} 
+                      <Input
+                        label="Name"
+                        id="name"
+                        placeholder="Tell me your name..."
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        valid={isNameValid}
                         required
                       />
-                      <Input 
-                        label="Email" 
-                        id="email" 
-                        type="email" 
-                        placeholder="Your email address..." 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        valid={isEmailValid} 
+                      <Input
+                        label="Email"
+                        id="email"
+                        type="email"
+                        placeholder="Your email address..."
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        valid={isEmailValid}
                         required
                       />
                     </div>
 
                     {/* Compact Second Row */}
                     <div>
-                      <Input 
-                        label="Message" 
-                        id="message" 
-                        type="textarea" 
-                        placeholder="What would you like to discuss with me?" 
-                        value={message} 
-                        onChange={(e) => setMessage(e.target.value)} 
-                        valid={isMessageValid} 
+                      <Input
+                        label="Message"
+                        id="message"
+                        type="textarea"
+                        placeholder="What would you like to discuss with me?"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        valid={isMessageValid}
                         required
                       />
                     </div>
 
                     {/* Action Buttons Row */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                      <button 
-                        type="submit" 
+                      <button
+                        type="submit"
                         disabled={loading}
                         className="group/btn relative flex-1 bg-lime-400 text-neutral-950 font-semibold h-14 rounded-2xl flex items-center justify-center gap-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:shadow-[0_0_30px_rgba(163,230,53,0.3)] disabled:opacity-70 disabled:hover:scale-100"
                       >
                         {/* Shimmer Effect */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out" />
-                        
+
                         <span>{loading ? "Sending..." : "Send Message"}</span>
-                        {!loading && <FaPaperPlane className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />}
+                        {!loading && (
+                          <FaPaperPlane className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
+                        )}
                       </button>
 
-                      <a 
-                        href={whatsappUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="group/wa flex-1 bg-white/[0.03] border border-white/10 text-white font-medium h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#25D366]/10 hover:border-[#25D366]/30 hover:text-[#25D366] transition-all duration-300 active:scale-95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(37,211,102,0.1)]"
                       >
                         <FaWhatsapp className="w-5 h-5 text-neutral-400 group-hover/wa:text-[#25D366] transition-colors" />
                         <span>WhatsApp</span>
                       </a>
                     </div>
-
                   </form>
                 </div>
               </div>
             </FadeIn>
           </div>
-
         </div>
       </div>
     </section>

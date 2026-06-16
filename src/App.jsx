@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import Lenis from 'lenis';
-import { Analytics } from "@vercel/analytics/next"
+// 1. CHANGED: Import the standard React analytics, not the Next.js version
+import { Analytics } from "@vercel/analytics/react"; 
+
 import DigitalUniverse from "./components/DigitalUniverse.jsx";
 import Github from './components/Github.jsx'
 import Navbar from "./components/Navbar.jsx";
@@ -43,7 +45,10 @@ function App() {
 
   return (
     <div className="poppins-regular min-h-screen text-neutral-300 relative">
-         <Analytics />vercel deploy
+      
+      {/* 2. FIXED: Removed the "vercel deploy" typo */}
+      <Analytics />
+
       {/* 1. The Master Background Engine (Pushed to z-[-2]) */}
       <div className="fixed inset-0 z-[-2] pointer-events-none w-full h-full">
         <DigitalUniverse />
