@@ -131,7 +131,6 @@ const Contact = () => {
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const isNameValid = name.length >= 2;
   const isEmailValid = validateEmail(email);
-
   const isMessageValid = message.length >= 2;
 
   const sendMessage = async (e) => {
@@ -216,7 +215,7 @@ const Contact = () => {
         {/* Responsive 2-Column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-center">
           {/* ========================================== */}
-          {/* LEFT SIDE: Information & Branding            */}
+          {/* LEFT SIDE: Information & Branding          */}
           {/* ========================================== */}
           <div className="md:col-span-5 flex flex-col gap-10">
             <FadeIn delay={100}>
@@ -316,17 +315,17 @@ const Contact = () => {
                       />
                     </div>
 
-                    {/* Action Buttons Row */}
-                    <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                    {/* Action Buttons Row - Perfectly Responsive Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                       <button
                         type="submit"
                         disabled={loading}
-                        className="group/btn relative flex-1 bg-lime-400 text-neutral-950 font-semibold h-14 rounded-2xl flex items-center justify-center gap-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:shadow-[0_0_30px_rgba(163,230,53,0.3)] disabled:opacity-70 disabled:hover:scale-100"
+                        className="group/btn relative w-full bg-lime-400 text-neutral-950 font-semibold h-14 rounded-2xl flex items-center justify-center gap-2 overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:shadow-[0_0_30px_rgba(163,230,53,0.3)] disabled:opacity-70 disabled:hover:scale-100 disabled:cursor-not-allowed"
                       >
                         {/* Shimmer Effect */}
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out" />
 
-                        <span>{loading ? "Sending..." : "Send Message"}</span>
+                        <span className="text-sm sm:text-base">{loading ? "Sending..." : "Send Message"}</span>
                         {!loading && (
                           <FaPaperPlane className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
                         )}
@@ -336,10 +335,10 @@ const Contact = () => {
                         href={whatsappUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group/wa flex-1 bg-white/[0.03] border border-white/10 text-white font-medium h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#25D366]/10 hover:border-[#25D366]/30 hover:text-[#25D366] transition-all duration-300 active:scale-95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(37,211,102,0.1)]"
+                        className="group/wa w-full bg-white/[0.03] border border-white/10 text-white font-medium h-14 rounded-2xl flex items-center justify-center gap-2 hover:bg-[#25D366]/10 hover:border-[#25D366]/30 hover:text-[#25D366] transition-all duration-300 active:scale-95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.02)] hover:shadow-[0_0_20px_rgba(37,211,102,0.1)]"
                       >
                         <FaWhatsapp className="w-5 h-5 text-neutral-400 group-hover/wa:text-[#25D366] transition-colors" />
-                        <span>WhatsApp</span>
+                        <span className="text-sm sm:text-base">WhatsApp</span>
                       </a>
                     </div>
                   </form>
