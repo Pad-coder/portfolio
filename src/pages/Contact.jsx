@@ -195,7 +195,7 @@ const Contact = () => {
       {/* Premium Ambient Lighting & Textures */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[800px] h-[800px] bg-lime-500/10 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)]" />
+        
         <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay">
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <filter id="noiseContact">

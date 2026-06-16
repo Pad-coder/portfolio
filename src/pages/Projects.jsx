@@ -196,8 +196,7 @@ const Projects = () => {
             <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
           </svg>
         </div>
-        {/* Subtle grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_10%,transparent_100%)]" />
+        
         {/* Soft radial glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-lime-500/5 blur-[150px] rounded-full" />
       </div>

@@ -56,7 +56,7 @@ function App() {
 
       {/* 2. Contrast Protection Layer (Sits between Universe and Content) */}
       <div className="fixed inset-0 bg-[#050505]/60 pointer-events-none z-[-1]" />
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#050505_100%)] opacity-80 pointer-events-none z-[-1]" />
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,#050505_50%)] opacity-80 pointer-events-none z-[-1]" />
 
       {/* Global CSS Override for Readability & Hardware Acceleration */}
       <style>{`
