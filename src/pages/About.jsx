@@ -12,7 +12,7 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.15 },
+      { threshold: 0.05, rootMargin: "50px 0px" },
     );
     if (domRef.current) observer.observe(domRef.current);
     return () => observer.disconnect();
@@ -21,7 +21,7 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
   return (
     <div
       ref={domRef}
-      className={`transition-all duration-1000 ease-out will-change-transform ${
+      className={`transition-all duration-500 ease-out will-change-transform ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
       } ${className}`}
       style={{ transitionDelay: `${delay}ms` }}
@@ -44,7 +44,7 @@ const AnimatedCounter = ({ end, suffix = "", delay = 0 }) => {
           observer.disconnect();
         }
       },
-      { threshold: 0.5 },
+      { threshold: 0.1 },
     );
     if (countRef.current) observer.observe(countRef.current);
     return () => observer.disconnect();
@@ -54,13 +54,12 @@ const AnimatedCounter = ({ end, suffix = "", delay = 0 }) => {
     if (!isVisible) return;
 
     let startTime = null;
-    const duration = 2000; // 2 seconds
+    const duration = 1200; 
 
     const animate = (currentTime) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
 
-      // Ease Out Expo
       const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
 
       setCount(Math.floor(easeOut * end));
@@ -86,10 +85,6 @@ const TechBadge = ({ tool }) => (
     {tool}
   </span>
 );
-
-// ==========================================
-// 2. MAIN SECTION COMPONENTS
-// ==========================================
 
 const ProfileCard = () => {
   const cardRef = useRef(null);
@@ -135,7 +130,6 @@ const ProfileCard = () => {
         <div className="flex items-center gap-6 relative z-10">
           <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-white/10 to-transparent">
             <div className="w-full h-full rounded-full overflow-hidden bg-neutral-900">
-              {/* FIXED: Reverted to .png and added lazy loading for below-the-fold content */}
               <img
                 src="/profile.webp" 
                 alt="Padmanaban"
@@ -183,7 +177,7 @@ const ProfileCard = () => {
               Experience
             </p>
             <p className="text-2xl text-white">
-              <AnimatedCounter end={2} suffix="+" delay={200} />{" "}
+              <AnimatedCounter end={2} suffix="+" delay={0} />{" "}
               <span className="text-sm text-neutral-400 font-normal">
                 Years
               </span>
@@ -194,7 +188,7 @@ const ProfileCard = () => {
               Projects
             </p>
             <p className="text-2xl text-white">
-              <AnimatedCounter end={20} suffix="+" delay={400} />{" "}
+              <AnimatedCounter end={20} suffix="+" delay={100} />{" "}
               <span className="text-sm text-neutral-400 font-normal">
                 Built
               </span>
@@ -209,7 +203,6 @@ const ProfileCard = () => {
 const ExpertiseCard = ({ item }) => (
   <div className="group relative bg-white/[0.02] rounded-[2.5rem] p-8 sm:p-10 border border-white/5 backdrop-blur-xl transition-all duration-500 hover:bg-white/[0.03] hover:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)]">
     <div className="flex flex-col md:flex-row items-start gap-8">
-      {/* Premium Icon Container */}
       <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-white/10 to-transparent p-[1px] shrink-0">
         <div className="w-full h-full rounded-2xl bg-[#0f0f0f] flex items-center justify-center text-neutral-400 group-hover:text-lime-400 transition-colors duration-300 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
           {item.icon}
@@ -224,7 +217,6 @@ const ExpertiseCard = ({ item }) => (
           {item.description}
         </p>
 
-        {/* Perfect CSS Grid for consistent alignment across all cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
           {item.categories.map((category) => (
             <div key={category.name} className="flex flex-col gap-3">
@@ -244,10 +236,6 @@ const ExpertiseCard = ({ item }) => (
     </div>
   </div>
 );
-
-// ==========================================
-// 3. MAIN ASSEMBLED PAGE
-// ==========================================
 
 const About = () => {
   const expertise = [
@@ -309,7 +297,8 @@ const About = () => {
   return (
     <div className="relative w-full min-h-screen pt-32 pb-24 text-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <FadeIn delay={100} className="mb-16">
+        
+        <FadeIn delay={0} className="mb-16">
           <h2 className="text-sm font-semibold text-lime-400 tracking-[0.2em] uppercase mb-3">
             About Me
           </h2>
@@ -318,23 +307,23 @@ const About = () => {
           </p>
         </FadeIn>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-32 items-stretch">
-          <div className="lg:col-span-4 lg:sticky lg:top-32 h-max">
-            <FadeIn delay={200} className="h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-32 items-start">
+          <div className="lg:col-span-4 lg:sticky lg:top-32">
+            <FadeIn delay={100}>
               <ProfileCard />
             </FadeIn>
           </div>
 
           <div className="lg:col-span-8 flex flex-col gap-6">
             {expertise.map((item, index) => (
-              <FadeIn key={item.title} delay={300 + index * 150}>
+              <FadeIn key={item.title} delay={index * 100}>
                 <ExpertiseCard item={item} />
               </FadeIn>
             ))}
           </div>
         </div>
 
-        <FadeIn delay={500}>
+        <FadeIn delay={150}>
           <div className="relative max-w-5xl mx-auto text-center bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 rounded-[3rem] p-12 sm:p-20 overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-lime-400/10 blur-[80px] rounded-full pointer-events-none" />
             <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight relative z-10">
