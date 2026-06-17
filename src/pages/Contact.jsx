@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 import toast from "react-hot-toast";
-import emailjs from "@emailjs/browser";
+
 import {
   FaWhatsapp,
   FaGithub,
@@ -149,6 +149,7 @@ const Contact = () => {
     setLoading(true);
 
     try {
+      const emailjs = (await import("@emailjs/browser")).default;
       await emailjs.send(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
@@ -320,4 +321,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default memo(Contact);

@@ -6,25 +6,22 @@ const RobotCompanion = ({ isVisible }) => {
   const { refs, physics } = useRobotPhysics();
 
   const getDepthClass = (depth) => {
-    if (depth === 0) return "scale-[0.4] blur-[4px] opacity-20 z-0"; // Background Layer
-    if (depth === 1) return "scale-[0.7] blur-[1.5px] opacity-40 z-0"; // Midground Layer
-    return "scale-100 opacity-80 drop-shadow-[0_0_12px_rgba(163,230,53,0.4)] z-0"; // Foreground Layer
+    if (depth === 0) return "scale-[0.4] blur-[4px] opacity-20 z-0"; 
+    if (depth === 1) return "scale-[0.7] blur-[1.5px] opacity-40 z-0"; 
+    return "scale-100 opacity-80 drop-shadow-[0_0_12px_rgba(163,230,53,0.4)] z-0"; 
   };
 
   return (
     <div className={`flex relative h-full items-center justify-center transition-all duration-1000 ease-out delay-500 mt-16 lg:mt-0 scale-75 sm:scale-90 lg:scale-100 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}>
       <div ref={refs.visual} className="relative w-full max-w-lg flex items-center justify-center" style={{ perspective: "1000px" }}>
         
-        {/* Glow */}
         <div ref={refs.robotGlow} className="absolute inset-0 bg-[radial-gradient(circle,rgba(163,230,53,0.3)_0%,transparent_60%)] transition-opacity duration-300 will-change-transform" style={{ opacity: 0.15 }} />
 
-        {/* Dynamic Syntax Swarm mapped via Physics State */}
         {physics.bugs.map((bug, i) => {
           if (!bug.isActive) return null;
           return <SyntaxButterfly key={i} index={i} type={bug.shape} depthClass={getDepthClass(bug.depth)} refs={refs} />;
         })}
 
-        {/* The Premium Robot Character */}
         <div ref={refs.robot} className="relative z-10 will-change-transform">
           
           <div ref={refs.bubble} className="absolute -top-16 left-1/2 bg-white/10 backdrop-blur-xl border border-white/20 text-white px-5 py-2.5 rounded-full text-sm font-semibold tracking-wide opacity-0 pointer-events-none z-50 shadow-[0_10px_30px_rgba(163,230,53,0.2)] whitespace-nowrap" style={{ willChange: 'transform, opacity', transform: 'translate3d(-50%, 10px, 0) scale3d(0.9, 0.9, 1)', transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}>

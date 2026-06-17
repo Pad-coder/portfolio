@@ -12,11 +12,11 @@ function MiniProjects() {
     useEffect(() => {
         const lenis = new Lenis({
             duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Apple-style Expo Out
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
             direction: 'vertical',
             gestureDirection: 'vertical',
             smooth: true,
-            smoothTouch: false, // Native scrolling on mobile
+            smoothTouch: false, 
             touchMultiplier: 2,
         });
 
@@ -152,7 +152,7 @@ function MiniProjects() {
     };
 
     return (
-        <div className="min-h-screen relative text-white pt-32 pb-24 select-none poppins-regular">
+        <div className="min-h-screen relative w-full overflow-x-clip text-white pt-32 pb-24 select-none poppins-regular">
             
             {/* Global CSS Override for Lenis */}
             <style>{`
@@ -181,7 +181,7 @@ function MiniProjects() {
             {/* Ambient Lighting Overlay */}
             <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none z-0" />
 
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full">
                 
                 {/* Elegant Header */}
                 <div className="text-center mb-20">
@@ -193,7 +193,7 @@ function MiniProjects() {
                 </div>
                 
                 {/* Interactive Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16 w-full">
                     
                     {/* APP 1: Keycode Finder */}
                     <div className="group bg-white/[0.02] border border-white/5 rounded-3xl p-8 backdrop-blur-xl transition-all duration-500 hover:border-lime-400/20 hover:bg-white/[0.04] flex flex-col h-full shadow-[0_8px_30px_rgb(0,0,0,0.12)]">

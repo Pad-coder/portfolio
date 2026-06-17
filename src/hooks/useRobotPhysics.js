@@ -188,7 +188,8 @@ export const useRobotPhysics = () => {
 
       const bDx = b.x - faceX - bug.x;
       const bDy = b.y - faceY - bug.y;
-      const bDist = Math.sqrt(bDx**2 + bDy**2);
+     const bDistSq = bDx * bDx + bDy * bDy;
+      const bDist = Math.sqrt(bDistSq);
       
       if (bDist < 300 || b.isGrabbed || ballSpeed > 10) {
         bug.isScared = true;

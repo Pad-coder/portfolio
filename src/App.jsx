@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 import Lenis from 'lenis';
 import { Analytics } from "@vercel/analytics/react"; 
 
+// 1. Critical elements loaded instantly
 import GlobalBackground from "./components/GlobalBackground.jsx";
-import Github from './components/Github.jsx'
 import Navbar from "./components/Navbar.jsx";
-import Footer from "./components/Footer.jsx";
-
 import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Projects from "./pages/Projects.jsx";
-import Contact from "./pages/Contact.jsx";
-import SocialMedia from "./pages/SocialMedia.jsx";
 
-function App() {
+// 2. Below-the-fold elements lazy loaded to slash initial JS payload
+const About = lazy(() => import("./pages/About.jsx"));
+const Projects = lazy(() => import("./pages/Projects.jsx"));
+const SocialMedia = lazy(() => import("./pages/SocialMedia.jsx"));
+const Contact = lazy(() => import("./pages/Contact.jsx"));
+const Github = lazy(() => import("./components/Github.jsx"));
+const Footer = lazy(() => import("./components/Footer.jsx"));
+
+export default function App() {
   
-  // --- PREMIUM SMOOTH SCROLLING (LENIS) ---
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
@@ -33,29 +34,17 @@ function App() {
     }
     requestAnimationFrame(raf);
 
-    return () => {
-      lenis.destroy();
-    };
+    return () => lenis.destroy();
   }, []);
 
   return (
-    <div className="poppins-regular min-h-screen w-full overflow-x-hidden text-neutral-300 relative selection:bg-lime-500/20 selection:text-lime-200">
-      
+    <div className="poppins-regular min-h-screen w-full overflow-x-clip text-neutral-300 relative selection:bg-lime-500/20 selection:text-lime-200">
       <Analytics />
-
-      {/* SINGLE UNIFIED BACKGROUND ENGINE */}
       <GlobalBackground />
 
-      {/* Global CSS Override for Readability & Hardware Acceleration */}
       <style>{`
-        /* FIXED: Enforce strict viewport width to fix mobile shifting */
-        html, body {
-          max-width: 100vw;
-          overflow-x: hidden;
-        }
-        section {
-          background-color: transparent !important;
-        }
+        html, body { max-width: 100vw; overflow-x: hidden; }
+        section { background-color: transparent !important; }
         .glass-panel, .bg-black\\/40, .bg-white\\/\\[0\\.02\\], .bg-white\\/\\[0\\.03\\], .bg-white\\/\\[0\\.04\\] {
           backdrop-filter: blur(12px) !important;
           -webkit-backdrop-filter: blur(12px) !important;
@@ -69,18 +58,20 @@ function App() {
 
       <Navbar/>
       
-      <main className="relative z-10 flex flex-col w-full overflow-x-hidden">
+      <main className="relative z-10 flex flex-col w-full overflow-x-clip">
+        {/* LCP Critical Section */}
         <section id="home"><Home /></section>
-        <section id="about"><About /></section>
-        <section id="projects"><Projects /></section>
-        <section id="socialmedia"><SocialMedia /></section>
-        <section id="contact"><Contact /></section>
+        
+        {/* Lazy Loaded Sections */}
+        <Suspense fallback={<div className="h-screen w-full" />}>
+          <section id="about"><About /></section>
+          <section id="projects"><Projects /></section>
+          <section id="socialmedia"><SocialMedia /></section>
+          <section id="contact"><Contact /></section>
+          <Github/>
+          <Footer />
+        </Suspense>
       </main>
-
-      <Github/>
-      <Footer />
     </div>
   );
 }
-
-export default App;

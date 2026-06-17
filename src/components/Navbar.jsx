@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Menu, X } from "lucide-react";
-import myLogo from '../assets/logo.png'; 
+import myLogo from "../assets/logo.png";
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState("home");
 
   const navLinks = [
     { name: "HOME", to: "home" },
@@ -19,7 +19,7 @@ function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       const scrollPosition = window.scrollY + 100;
-      const sections = navLinks.map(link => document.getElementById(link.to));
+      const sections = navLinks.map((link) => document.getElementById(link.to));
 
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
@@ -29,48 +29,58 @@ function Navbar() {
         }
       }
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const scrollToSection = (e, sectionId) => {
     e.preventDefault(); // Prevents instant jump, allows smooth scroll
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
       // Update URL hash for SEO & history tracking without jumping
-      window.history.pushState(null, '', `#${sectionId}`);
+      window.history.pushState(null, "", `#${sectionId}`);
     }
     setOpen(false);
   };
 
   return (
-    <header className={`w-full fixed top-0 z-40 transition-all duration-500 ease-in-out ${
-      scrolled ? 'bg-black/60 backdrop-blur-xl border-b border-white/5 py-3' : 'bg-transparent py-5'
-    }`}>
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8">
-        
-        {/* Elegant Logo Image & Premium Text (Now a semantic link) */}
-        <a 
+    <header
+      /* FIXED: Bumped to z-[100] so it always stays above EVERYTHING.
+         FIXED: Added '|| open' so the header background applies when the menu is open, even at the top of the page */
+      className={`w-full fixed top-0 left-0 z-[100] transition-all duration-500 ease-in-out ${
+        scrolled || open
+          ? "bg-[#0a0a0a]/85 backdrop-blur-xl border-b border-white/5 py-3 shadow-2xl"
+          : "bg-transparent py-5"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 lg:px-8 relative z-10">
+        {/* Elegant Logo Image & Premium Text */}
+        <a
           href="#home"
           className="flex items-center gap-2 sm:gap-3 cursor-pointer group"
-          onClick={(e) => scrollToSection(e, 'home')}
+          onClick={(e) => scrollToSection(e, "home")}
           aria-label="Padcoder Home"
         >
-          {/* Logo Image - Removed loading="lazy" for better LCP */}
-          <img 
-            src={myLogo} 
-            alt="Padcoder Logo" 
+          <img
+            src={myLogo}
+            alt="Padcoder Logo"
+            width={150} 
+            height={48} 
+            fetchPriority="high" 
+            decoding="async"
             className="h-9 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 ease-out group-hover:scale-105"
           />
-          
-          {/* Stylish Brand Text */}
+
           <span className="text-xl sm:text-2xl font-bold tracking-tight text-white transition-all duration-300 group-hover:opacity-90">
-            Padcoder<span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">.com</span>
+            Padcoder
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">
+              .com
+            </span>
           </span>
         </a>
 
-        {/* Desktop Navigation (Converted to semantic anchor tags) */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1 bg-white/5 border border-white/5 rounded-full px-2 py-1 backdrop-blur-md">
           {navLinks.map((link) => (
             <a
@@ -78,7 +88,9 @@ function Navbar() {
               href={`#${link.to}`}
               onClick={(e) => scrollToSection(e, link.to)}
               className={`relative px-5 py-2 text-sm font-medium transition-colors duration-300 rounded-full ${
-                activeSection === link.to ? 'text-neutral-900' : 'text-neutral-400 hover:text-white'
+                activeSection === link.to
+                  ? "text-neutral-900"
+                  : "text-neutral-400 hover:text-white"
               }`}
             >
               {activeSection === link.to && (
@@ -101,22 +113,39 @@ function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      <div className={`md:hidden absolute w-full bg-black/95 backdrop-blur-xl border-b border-white/10 transition-all duration-500 ease-in-out ${open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
+      {/* FIXED: Added top-full and left-0 so it drops down perfectly. 
+          FIXED: Changed bg-black/95 to bg-[#0a0a0a]/90 to make the glassmorphism blur visible! */}
+      <div
+        className={`md:hidden absolute top-full left-0 w-full bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/10 transition-all duration-500 ease-in-out shadow-2xl ${
+          open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+        }`}
+      >
         <div className="px-6 py-6 flex flex-col gap-4">
           {navLinks.map((link) => (
             <a
               key={link.to}
               href={`#${link.to}`}
               onClick={(e) => scrollToSection(e, link.to)}
-              className={`text-left text-lg font-medium transition-colors ${activeSection === link.to ? 'text-lime-400' : 'text-white/70 hover:text-white'}`}
+              className={`text-left text-lg font-medium transition-colors ${activeSection === link.to ? "text-lime-400" : "text-white/70 hover:text-white"}`}
             >
               {link.name}
             </a>
           ))}
+          <a
+            href="/mini-projects"
+            className={`rounded-2xl px-4 py-3 text-left text-lg font-semibold transition-colors duration-300 ${
+              activeSection === "mini-projects"
+                ? "bg-lime-400/10 text-lime-300"
+                : "text-white/80 hover:text-white hover:bg-white/5"
+            }`}
+            rel="noopener noreferrer"
+          >
+            MINI PROJECTS
+          </a>
         </div>
       </div>
     </header>
   );
 }
 
-export default Navbar;
+export default memo(Navbar);

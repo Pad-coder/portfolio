@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, memo } from "react";
 
 const FadeIn = ({ children, delay = 0, className = "" }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,7 +12,7 @@ const FadeIn = ({ children, delay = 0, className = "" }) => {
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.15 },
     );
     if (domRef.current) observer.observe(domRef.current);
     return () => observer.disconnect();
@@ -44,7 +44,7 @@ const AnimatedCounter = ({ end, suffix = "", delay = 0 }) => {
           observer.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     );
     if (countRef.current) observer.observe(countRef.current);
     return () => observer.disconnect();
@@ -52,30 +52,31 @@ const AnimatedCounter = ({ end, suffix = "", delay = 0 }) => {
 
   useEffect(() => {
     if (!isVisible) return;
-    
+
     let startTime = null;
     const duration = 2000; // 2 seconds
 
     const animate = (currentTime) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      
+
       // Ease Out Expo
       const easeOut = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
+
       setCount(Math.floor(easeOut * end));
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       }
     };
-    
+
     setTimeout(() => requestAnimationFrame(animate), delay);
   }, [isVisible, end, delay]);
 
   return (
     <span ref={countRef} className="tabular-nums font-bold">
-      {count}{suffix}
+      {count}
+      {suffix}
     </span>
   );
 };
@@ -94,19 +95,20 @@ const ProfileCard = () => {
   const cardRef = useRef(null);
   const contentRef = useRef(null);
 
-  // High-performance 3D Tilt (No React state updates)
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current || !contentRef.current) return;
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     if (prefersReducedMotion) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-    
+
     const xRotate = (-y / rect.height) * 15;
     const yRotate = (x / rect.width) * 15;
-    
+
     contentRef.current.style.transform = `perspective(1000px) rotateX(${xRotate}deg) rotateY(${yRotate}deg) scale3d(1.02, 1.02, 1.02)`;
   }, []);
 
@@ -116,62 +118,87 @@ const ProfileCard = () => {
   }, []);
 
   return (
-    <div 
+    <div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className="group relative h-full w-full rounded-[2.5rem] bg-gradient-to-b from-white/[0.04] to-transparent p-[1px]"
     >
-      {/* Animated Glow Border */}
       <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-b from-lime-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm" />
-      
-      {/* Glass Surface */}
-      <div 
+
+      <div
         ref={contentRef}
         className="relative h-full w-full bg-[#0a0a0a]/90 backdrop-blur-3xl rounded-[2.5rem] p-8 sm:p-10 flex flex-col gap-8 transition-transform duration-300 ease-out shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_20px_40px_rgba(0,0,0,0.4)] overflow-hidden"
       >
-        {/* Soft Inner Glow */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-lime-400/5 blur-[80px] rounded-full pointer-events-none" />
 
         <div className="flex items-center gap-6 relative z-10">
           <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-white/10 to-transparent">
             <div className="w-full h-full rounded-full overflow-hidden bg-neutral-900">
-              <img 
-                src="/profile.png" 
-                alt="Padmanaban" 
+              {/* FIXED: Reverted to .png and added lazy loading for below-the-fold content */}
+              <img
+                src="/profile.webp" 
+                alt="Padmanaban"
+                width="96"
+                height="96"
                 loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                decoding="async"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
             </div>
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">Padmanaban M</h2>
+            <h2 className="text-2xl font-bold text-white tracking-tight">
+              Padmanaban M
+            </h2>
             <div className="flex items-center gap-2 mt-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
               </span>
-              <p className="text-lime-400 text-xs font-semibold tracking-wider uppercase">Open to Work</p>
+              <p className="text-lime-400 text-xs font-semibold tracking-wider uppercase">
+                Open to Work
+              </p>
             </div>
             <p className="text-neutral-500 text-sm mt-1 flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
               Tamil Nadu, India
             </p>
           </div>
         </div>
 
         <p className="text-neutral-400 text-base leading-relaxed font-light relative z-10">
-          I started coding out of a desire to build things that matter. Today, I focus on bridging the gap between elegant frontend interfaces and robust backend architectures, ensuring performance and premium user experiences.
+          I started coding out of a desire to build things that matter. Today, I
+          focus on bridging the gap between elegant frontend interfaces and
+          robust backend architectures, ensuring performance and premium user
+          experiences.
         </p>
 
         <div className="grid grid-cols-2 gap-4 mt-auto relative z-10 pt-6 border-t border-white/5">
           <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/5">
-            <p className="text-neutral-500 text-xs uppercase tracking-widest font-semibold mb-1">Experience</p>
-            <p className="text-2xl text-white"><AnimatedCounter end={2} suffix="+" delay={200} /> <span className="text-sm text-neutral-400 font-normal">Years</span></p>
+            <p className="text-neutral-500 text-xs uppercase tracking-widest font-semibold mb-1">
+              Experience
+            </p>
+            <p className="text-2xl text-white">
+              <AnimatedCounter end={2} suffix="+" delay={200} />{" "}
+              <span className="text-sm text-neutral-400 font-normal">
+                Years
+              </span>
+            </p>
           </div>
           <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/5">
-            <p className="text-neutral-500 text-xs uppercase tracking-widest font-semibold mb-1">Projects</p>
-            <p className="text-2xl text-white"><AnimatedCounter end={20} suffix="+" delay={400} /> <span className="text-sm text-neutral-400 font-normal">Built</span></p>
+            <p className="text-neutral-500 text-xs uppercase tracking-widest font-semibold mb-1">
+              Projects
+            </p>
+            <p className="text-2xl text-white">
+              <AnimatedCounter end={20} suffix="+" delay={400} />{" "}
+              <span className="text-sm text-neutral-400 font-normal">
+                Built
+              </span>
+            </p>
           </div>
         </div>
       </div>
@@ -222,13 +249,12 @@ const ExpertiseCard = ({ item }) => (
 // 3. MAIN ASSEMBLED PAGE
 // ==========================================
 
-
-
 const About = () => {
   const expertise = [
     {
       title: "Frontend Architecture",
-      description: "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
+      description:
+        "Building responsive, accessible, and high-performance user interfaces using modern JavaScript frameworks and CSS methodologies.",
       categories: [
         { name: "Languages", tools: ["HTML5", "CSS3", "JavaScript"] },
         { name: "Frameworks", tools: ["React", "Next.js"] },
@@ -238,17 +264,33 @@ const About = () => {
     },
     {
       title: "Backend Architecture",
-      description: "Designing secure, scalable server-side systems and RESTful APIs. Emphasizing database optimization and maintainable business logic.",
+      description:
+        "Designing secure, scalable server-side systems and RESTful APIs. Emphasizing database optimization and maintainable business logic.",
       categories: [
         { name: "Runtime", tools: ["Node.js", "PHP"] },
         { name: "Frameworks", tools: ["Express"] },
         { name: "Databases", tools: ["MongoDB", "MySQL"] },
       ],
-      icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>,
+      icon: (
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.5}
+            d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+          />
+        </svg>
+      ),
     },
     {
       title: "Full-Stack Integration",
-      description: "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
+      description:
+        "Seamlessly connecting frontend and backend systems with modern development workflows and deployment strategies.",
       categories: [
         { name: "Development", tools: ["React", "Next.js", "WordPress"] },
         { name: "Design Tools", tools: ["Figma", "Photoshop"] },
@@ -259,16 +301,21 @@ const About = () => {
   ];
 
   const scrollToSection = (sectionId) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(sectionId)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
     <div className="relative w-full min-h-screen pt-32 pb-24 text-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-                 
         <FadeIn delay={100} className="mb-16">
-          <h2 className="text-sm font-semibold text-lime-400 tracking-[0.2em] uppercase mb-3">About Me</h2>
-          <p className="text-3xl md:text-5xl font-bold text-white tracking-tight">Engineering Digital Experiences.</p>
+          <h2 className="text-sm font-semibold text-lime-400 tracking-[0.2em] uppercase mb-3">
+            About Me
+          </h2>
+          <p className="text-3xl md:text-5xl font-bold text-white tracking-tight">
+            Engineering Digital Experiences.
+          </p>
         </FadeIn>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-32 items-stretch">
@@ -277,7 +324,7 @@ const About = () => {
               <ProfileCard />
             </FadeIn>
           </div>
-          
+
           <div className="lg:col-span-8 flex flex-col gap-6">
             {expertise.map((item, index) => (
               <FadeIn key={item.title} delay={300 + index * 150}>
@@ -291,10 +338,16 @@ const About = () => {
           <div className="relative max-w-5xl mx-auto text-center bg-gradient-to-b from-white/[0.04] to-transparent border border-white/5 rounded-[3rem] p-12 sm:p-20 overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] backdrop-blur-xl">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-32 bg-lime-400/10 blur-[80px] rounded-full pointer-events-none" />
             <h3 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight relative z-10">
-              Let's Build Something <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">Great</span>.
+              Let's Build Something{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-lime-200">
+                Great
+              </span>
+              .
             </h3>
             <p className="text-neutral-400 text-base sm:text-lg font-light leading-relaxed max-w-2xl mx-auto mb-10 relative z-10">
-              Whether you have a startup idea, need a technical partner, or want to revamp an existing product, I'm ready to help turn your vision into reality.
+              Whether you have a startup idea, need a technical partner, or want
+              to revamp an existing product, I'm ready to help turn your vision
+              into reality.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center relative z-10">
               <button
@@ -302,8 +355,18 @@ const About = () => {
                 className="group px-8 py-4 bg-white text-neutral-950 rounded-2xl font-semibold transition-all duration-300 hover:bg-lime-400 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(163,230,53,0.25)] w-full sm:w-auto flex items-center justify-center gap-2"
               >
                 Get In Touch
-                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                <svg
+                  className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
                 </svg>
               </button>
             </div>
@@ -314,4 +377,4 @@ const About = () => {
   );
 };
 
-export default About;
+export default memo(About);
