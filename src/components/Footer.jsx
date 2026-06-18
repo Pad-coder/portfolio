@@ -14,7 +14,7 @@ function Footer() {
   const socialLinks = [
     { icon: FaGithub, href: "https://github.com/Pad-coder", name: "GitHub" },
     { icon: FaLinkedin, href: "https://www.linkedin.com/in/padmanaban2002/", name: "LinkedIn" },
-    { icon: FaInstagram, href: "https://www.instagram.com/pad_coder/", name: "Instagram" },
+    { icon: FaInstagram, href: "https://www.instagram.com/padcoder/", name: "Instagram" },
     { icon: FaTwitter, href: "https://x.com/pad_coder", name: "Twitter" },
   ];
 
