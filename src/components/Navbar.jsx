@@ -112,9 +112,7 @@ function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
-      {/* FIXED: Added top-full and left-0 so it drops down perfectly. 
-          FIXED: Changed bg-black/95 to bg-[#0a0a0a]/90 to make the glassmorphism blur visible! */}
+
       <div
         className={`md:hidden absolute top-full left-0 w-full bg-[#0a0a0a]/90 backdrop-blur-xl border-b border-white/10 transition-all duration-500 ease-in-out shadow-2xl ${
           open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"

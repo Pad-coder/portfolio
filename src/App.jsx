@@ -68,10 +68,17 @@ export default function App() {
           <section id="projects"><Projects /></section>
           <section id="socialmedia"><SocialMedia /></section>
           <section id="contact"><Contact /></section>
-          <Github/>
           <Footer />
         </Suspense>
       </main>
+
+      {/* FIX: Moved Github OUTSIDE of the <main> tag! 
+        Now it shares the same high-level stacking context as the Navbar,
+        so it will always float completely above the Navbar and never get stuck.
+      */}
+      <Suspense fallback={null}>
+        <Github />
+      </Suspense>
     </div>
   );
 }
