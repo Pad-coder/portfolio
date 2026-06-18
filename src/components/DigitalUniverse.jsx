@@ -42,9 +42,9 @@ export default function DigitalUniverse() {
     let mouse = { x: width / 2, y: height / 2, vx: 0, vy: 0 };
     let ripples = [];
 
-    const STAR_COUNT = isMobile ? 30 : 120; // Reduced from 50/150
-    const SYNTAX_COUNT = isMobile ? 10 : 30; // Reduced from 15/40
-    const DUST_COUNT = isMobile ? 15 : 40; // Reduced from 20/60
+    const STAR_COUNT = isMobile ? 30 : 120;
+    const SYNTAX_COUNT = isMobile ? 10 : 30;
+    const DUST_COUNT = isMobile ? 15 : 40;
 
     const stars = [];
     const syntaxes = [];
@@ -122,11 +122,10 @@ export default function DigitalUniverse() {
       targetScrollY = window.scrollY;
       scrollY += (targetScrollY - scrollY) * 0.1;
 
-      const scrollPercent =
-        scrollY / (document.body.scrollHeight - height || 1);
+      const scrollPercent = scrollY / (document.body.scrollHeight - height || 1);
       ctx.clearRect(0, 0, width, height);
 
-      // 1. NEBULA - Opacity significantly reduced (0.03 -> 0.015)
+      // 1. NEBULA - Opacity significantly reduced for performance
       if (!prefersReducedMotion && !isMobile) {
         const cx = width * 0.5 + Math.sin(time * 0.002) * 100;
         const cy = height * 0.5 + Math.cos(time * 0.003) * 100 - scrollY * 0.1;
@@ -137,7 +136,7 @@ export default function DigitalUniverse() {
         ctx.fillRect(0, 0, width, height);
       }
 
-      // 2. STARS - Alpha reduced to prevent washing out text
+      // 2. STARS
       stars.forEach((star) => {
         let sy = (star.y - scrollY * star.z) % height;
         if (sy < 0) sy += height;
@@ -156,7 +155,7 @@ export default function DigitalUniverse() {
         ctx.fill();
       });
 
-      // 3. SHOOTING STARS - Made softer
+      // 3. SHOOTING STARS
       if (!prefersReducedMotion) {
         if (!shootingStar && Math.random() < 0.002) {
           shootingStar = {
@@ -195,7 +194,7 @@ export default function DigitalUniverse() {
         }
       }
 
-      // 4. FLOATING SYNTAX - Max alpha reduced (0.4 -> 0.12) for extreme subtlety
+      // 4. FLOATING SYNTAX
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
@@ -213,7 +212,9 @@ export default function DigitalUniverse() {
 
         const b = sharedPhysics.ball;
         const distSq = (syn.x - b.x) * (syn.x - b.x) + (sy - b.y) * (sy - b.y);
-        if (b.isGrabbed && distSq < 200) {
+        
+        // FIXED threshold to 40000 (200px distance) for responsive behavior
+        if (b.isGrabbed && distSq < 40000) {
           syn.x += (syn.x - b.x) * 0.02;
           targetAlpha = 0;
         }
@@ -227,7 +228,7 @@ export default function DigitalUniverse() {
         ctx.restore();
       });
 
-      // 5. DATA PARTICLES & NETWORK - Subdued lines
+      // 5. DATA PARTICLES & NETWORK
       ctx.strokeStyle = "rgba(163, 230, 53, 0.08)";
       ctx.fillStyle = "rgba(163, 230, 53, 0.2)";
 
@@ -240,7 +241,7 @@ export default function DigitalUniverse() {
         let sy = (dust.y - scrollY * dust.z) % height;
         if (sy < 0) sy += height;
 
-if (!isMobile) {
+        if (!isMobile) {
           const distSqMouse = (dust.x - mouse.x) * (dust.x - mouse.x) + (sy - mouse.y) * (sy - mouse.y);
           if (distSqMouse < 22500) { // 150px threshold
             dust.x += (dust.x - mouse.x) * 0.01;
@@ -250,7 +251,9 @@ if (!isMobile) {
 
         const b = sharedPhysics.ball;
         const distSqBall = (dust.x - b.x) * (dust.x - b.x) + (sy - b.y) * (sy - b.y);
-        if (b.isGrabbed && distToBall < 62500) {
+        
+        // FIXED: Replaced 'distToBall' with 'distSqBall' to match our high-performance calculation
+        if (b.isGrabbed && distSqBall < 62500) {
           const dx = dust.x - b.x;
           const dy = sy - b.y;
           dust.x += dy * 0.02;
@@ -265,6 +268,8 @@ if (!isMobile) {
           for (let j = i + 1; j < dusts.length; j++) {
             let sy2 = (dusts[j].y - scrollY * dusts[j].z) % height;
             if (sy2 < 0) sy2 += height;
+            
+            // Re-introduced Math.sqrt ONLY for the complex interconnected lines on Desktop
             const dist = Math.sqrt(
               (dust.x - dusts[j].x) ** 2 + (sy - sy2) ** 2,
             );
